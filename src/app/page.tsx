@@ -31,10 +31,17 @@ export default function Home() {
   const [isSkinShopOpen, setIsSkinShopOpen] = useState(false);
   const [adPosition, setAdPosition] = useState<{ x: number; y: number } | null>(null);
   const [fallingClicks, setFallingClicks] = useState<Array<{ id: number; x: number; y: number }>>([]);
+  const [floatingMemes, setFloatingMemes] = useState<Array<{ 
+    id: number; 
+    upgradeId: string; 
+    direction: 'left-to-right' | 'right-to-left' | 'top-to-bottom' | 'bottom-to-top';
+    startPos: number;
+  }>>([]);
   
   const clickTimestamps = useRef<number[]>([]);
   const hasLoadedData = useRef(false);
   const fallingClickIdRef = useRef(0);
+  const memeIdRef = useRef(0);
 
   // Load game data from JSON files
   useEffect(() => {
@@ -130,6 +137,71 @@ export default function Home() {
 
     showRandomAd();
   }, []);
+
+  // Spawn floating meme images for owned upgrades
+  useEffect(() => {
+    const intervals: NodeJS.Timeout[] = [];
+    
+    const startMemeChaos = () => {
+      const ownedUpgrades = upgradeData.filter((upgrade) => (upgrades[upgrade.id] || 0) >= 1);
+      
+      // Clear previous intervals
+      intervals.forEach(clearInterval);
+      intervals.length = 0;
+      
+      if (ownedUpgrades.length > 0) {
+        ownedUpgrades.forEach((upgrade) => {
+          const upgradeCount = upgrades[upgrade.id] || 0;
+          const maxOnScreen = Math.min(upgradeCount, 10);
+          
+          // Create interval for each upgrade type
+          const interval = setInterval(() => {
+            // Count current memes of this upgrade type on screen
+            setFloatingMemes((prev) => {
+              const currentCount = prev.filter((meme) => meme.upgradeId === upgrade.id).length;
+              
+              if (currentCount >= maxOnScreen) return prev; // Don't spawn if at max
+              
+              // Spawn only 1 meme at a time for spread effect
+              const directions: Array<'left-to-right' | 'right-to-left' | 'top-to-bottom' | 'bottom-to-top'> = ['left-to-right', 'right-to-left', 'top-to-bottom', 'bottom-to-top'];
+              const direction = directions[Math.floor(Math.random() * directions.length)];
+              
+              // Random starting position
+              const startPos = Math.random() * ((direction === 'left-to-right' || direction === 'right-to-left') ? window.innerHeight : window.innerWidth);
+              
+              const memeId = memeIdRef.current++;
+              
+              setTimeout(() => {
+                setFloatingMemes((current) => [...current, {
+                  id: memeId,
+                  upgradeId: upgrade.id,
+                  direction,
+                  startPos,
+                }]);
+                
+                // Remove after animation completes (8 seconds)
+                setTimeout(() => {
+                  setFloatingMemes((current) => current.filter((meme) => meme.id !== memeId));
+                }, 8000);
+              }, Math.random() * 500); // Random delay 0-500ms for more spread
+              
+              return prev;
+            });
+          }, Math.random() * 800 + 400); // Random interval 400-1200ms per upgrade type
+          
+          intervals.push(interval);
+        });
+      }
+    };
+
+    if (upgradeData.length > 0) {
+      startMemeChaos();
+    }
+    
+    return () => {
+      intervals.forEach(clearInterval);
+    };
+  }, [upgrades, upgradeData]);
 
   const handleClick = () => {
     setScore((prevScore) => safeAdd(prevScore, 1));
@@ -235,7 +307,7 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-white flex-col">
-      <div className="mb-4 text-4xl font-bold text-black absolute top-4 flex flex-col gap-2 align-center justify-center text-center w-max">
+      <div className="mb-4 text-4xl font-bold text-black absolute top-4 flex flex-col gap-2 align-center justify-center text-center w-max z-50">
         <h1 className="font-bold text-black text-3xl">{formatNumber(score)} Click(s)</h1>
         <h1 className="font-semibold text-black text-lg">
           Total: {formatNumber(totalCPS + clicksPerSec)} clicks/sec
@@ -265,7 +337,7 @@ export default function Home() {
         </div>
       </div>
       
-      <div className="text-center h-2/3 flex flex-col justify-center">
+      <div className="text-center h-2/3 flex flex-col justify-center z-1000">
         <Image
           src={`/button/${buttonSkin}/${isPressed ? 'press' : 'unpress'}.png`}
           alt="Logo"
@@ -315,7 +387,7 @@ export default function Home() {
             top: `${adPosition.y}px`,
             zIndex: 1000,
           }}
-          className="cursor-pointer animate-bounce"
+          className="cursor-pointer animate-bounce z-999"
           onClick={handleAdClick}
         >
           <Image
@@ -350,6 +422,45 @@ export default function Home() {
         </div>
       ))}
 
+      {/* Floating Meme Images */}
+      {floatingMemes.map((meme) => (
+        <div
+          key={meme.id}
+          style={{
+            position: 'fixed',
+            ...(meme.direction === 'left-to-right' ? {
+              left: '-150px',
+              top: `${meme.startPos}px`,
+              animation: 'slideLeftToRight 8s linear forwards',
+            } : meme.direction === 'right-to-left' ? {
+              right: '-150px',
+              top: `${meme.startPos}px`,
+              animation: 'slideRightToLeft 8s linear forwards',
+            } : meme.direction === 'top-to-bottom' ? {
+              top: '-150px',
+              left: `${meme.startPos}px`,
+              animation: 'slideTopToBottom 8s linear forwards',
+            } : {
+              bottom: '-150px',
+              left: `${meme.startPos}px`,
+              animation: 'slideBottomToTop 8s linear forwards',
+            }),
+            zIndex: 10,
+          }}
+        >
+          <Image
+            src={`/upgradePhoto/${meme.upgradeId}.webp`}
+            alt={meme.upgradeId}
+            width={120}
+            height={120}
+            className="pointer-events-none opacity-80"
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.display = 'none';
+            }}
+          />
+        </div>
+      ))}
+
       <style jsx>{`
         @keyframes fall {
           0% {
@@ -359,6 +470,62 @@ export default function Home() {
           100% {
             transform: translateY(500px) rotate(360deg);
             opacity: 0;
+          }
+        }
+        
+        @keyframes slideLeftToRight {
+          0% {
+            left: -150px;
+            transform: rotate(-15deg);
+          }
+          50% {
+            transform: rotate(15deg);
+          }
+          100% {
+            left: 100vw;
+            transform: rotate(-15deg);
+          }
+        }
+        
+        @keyframes slideRightToLeft {
+          0% {
+            right: -150px;
+            transform: rotate(-15deg);
+          }
+          50% {
+            transform: rotate(15deg);
+          }
+          100% {
+            right: 100vw;
+            transform: rotate(-15deg);
+          }
+        }
+        
+        @keyframes slideTopToBottom {
+          0% {
+            top: -150px;
+            transform: rotate(-15deg);
+          }
+          50% {
+            transform: rotate(15deg);
+          }
+          100% {
+            top: 100vh;
+            transform: rotate(-15deg);
+          }
+        }
+        
+        @keyframes slideBottomToTop {
+          0% {
+            bottom: -150px;
+            transform: rotate(-15deg);
+          }
+          50% {
+            transform: rotate(15deg);
+          }
+          100% {
+            bottom: 100vh;
+            transform: rotate(-15deg);
           }
         }
       `}</style>

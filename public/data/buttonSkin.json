@@ -11,6 +11,12 @@
             "name": "Among Us Skin",
             "value": "among_us",
             "price": 5000
+        },
+        {
+            "id": "popcat",
+            "name": "Popcat Skin",
+            "value": "popcat",
+            "price": 10000
         }
     ]
 }

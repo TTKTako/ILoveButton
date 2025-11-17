@@ -27,7 +27,7 @@ export default function SkinShop({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
+    <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-1000">
       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="bg-yellow-500 text-white p-4 flex justify-between items-center">

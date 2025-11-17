@@ -1,0 +1,12 @@
+{
+    "upgrades": [
+        {
+            "id": "cursor",
+            "name": "Auto Clicker",
+            "description": "Automatically clicks the button for you",
+            "base_price": 100,
+            "base_cps": 0.1,
+            "icon": "🖱️"
+        }
+    ]
+}
