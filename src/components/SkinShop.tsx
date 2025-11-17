@@ -27,21 +27,21 @@ export default function SkinShop({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-1000">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden flex flex-col">
+    <div className="fixed inset-0 backdrop-blur-sm flex items-center bg-black/50 justify-center z-1000 p-4">
+      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[85vh] sm:max-h-[80vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="bg-yellow-500 text-white p-4 flex justify-between items-center">
-          <h2 className="text-2xl font-bold">Skin Shop</h2>
+        <div className="bg-yellow-500 text-white p-3 sm:p-4 flex justify-between items-center">
+          <h2 className="text-xl sm:text-2xl font-bold">Skin Shop</h2>
           <button
             onClick={onClose}
-            className="text-white hover:bg-yellow-600 rounded px-3 py-1 text-xl font-bold"
+            className="text-white hover:bg-yellow-600 rounded px-2 sm:px-3 py-1 text-lg sm:text-xl font-bold"
           >
             X
           </button>
         </div>
 
         {/* Skins Grid */}
-        <div className="overflow-y-auto p-4 grid grid-cols-2 gap-4">
+        <div className="overflow-y-auto p-2 sm:p-4 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           {skins.map((skin) => {
             const isPurchased = purchasedSkins.includes(skin.id);
             const isEquipped = equippedSkin === skin.value;
@@ -50,7 +50,7 @@ export default function SkinShop({
             return (
               <div
                 key={skin.id}
-                className={`border rounded-lg p-4 flex flex-col items-center ${
+                className={`border rounded-lg p-3 sm:p-4 flex flex-col items-center ${
                   isEquipped
                     ? 'bg-blue-100 border-blue-500 border-2'
                     : isPurchased
@@ -61,7 +61,7 @@ export default function SkinShop({
                 }`}
               >
                 {/* Skin Preview */}
-                <div className="w-32 h-32 mb-3 relative bg-gray-100 rounded flex items-center justify-center overflow-hidden">
+                <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 mb-2 sm:mb-3 relative bg-gray-100 rounded flex items-center justify-center overflow-hidden">
                   <img
                     src={`/button/${skin.value}/unpress.png`}
                     alt={skin.name}
@@ -73,7 +73,7 @@ export default function SkinShop({
                 </div>
 
                 {/* Skin Info */}
-                <h3 className="font-bold text-center text-black mb-1">
+                <h3 className="font-bold text-center text-black mb-1 text-sm sm:text-base">
                   {skin.name}
                 </h3>
                 
@@ -88,7 +88,7 @@ export default function SkinShop({
                   <button
                     onClick={() => onPurchase(skin.id)}
                     disabled={!canAfford}
-                    className={`w-full px-4 py-2 rounded font-semibold text-white transition-colors ${
+                    className={`w-full px-3 sm:px-4 py-1.5 sm:py-2 rounded font-semibold text-white transition-colors text-sm sm:text-base ${
                       canAfford
                         ? 'bg-yellow-500 hover:bg-yellow-600 cursor-pointer'
                         : 'bg-gray-400 cursor-not-allowed'
@@ -99,12 +99,12 @@ export default function SkinShop({
                 ) : !isEquipped ? (
                   <button
                     onClick={() => onEquip(skin.id)}
-                    className="w-full px-4 py-2 rounded font-semibold bg-blue-500 hover:bg-blue-600 text-white transition-colors cursor-pointer"
+                    className="w-full px-3 sm:px-4 py-1.5 sm:py-2 rounded font-semibold bg-blue-500 hover:bg-blue-600 text-white transition-colors cursor-pointer text-sm sm:text-base"
                   >
                     Equip
                   </button>
                 ) : (
-                  <div className="w-full px-4 py-2 rounded font-semibold bg-gray-300 text-gray-600 text-center">
+                  <div className="w-full px-3 sm:px-4 py-1.5 sm:py-2 rounded font-semibold bg-gray-300 text-gray-600 text-center text-sm sm:text-base">
                     Equipped
                   </div>
                 )}
@@ -114,8 +114,8 @@ export default function SkinShop({
         </div>
 
         {/* Footer */}
-        <div className="border-t p-4 bg-gray-50">
-          <p className="text-center text-sm text-gray-600">
+        <div className="border-t p-3 sm:p-4 bg-gray-50">
+          <p className="text-center text-xs sm:text-sm text-gray-600">
             Your Clicks: <strong className="text-black">{formatNumber(score)}</strong>
           </p>
         </div>

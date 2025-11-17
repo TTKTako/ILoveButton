@@ -29,26 +29,26 @@ export default function UpgradeShop({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-1000">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden flex flex-col">
+    <div className="fixed inset-0 backdrop-blur-sm bg-black/50 flex items-center justify-center z-1000 p-4">
+      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[85vh] sm:max-h-[80vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="bg-blue-500 text-white p-4 flex justify-between items-center">
+        <div className="bg-blue-500 text-white p-3 sm:p-4 flex justify-between items-center">
           <div>
-            <h2 className="text-2xl font-bold">Upgrade Shop</h2>
-            <p className="text-sm opacity-90">
+            <h2 className="text-xl sm:text-2xl font-bold">Upgrade Shop</h2>
+            <p className="text-xs sm:text-sm opacity-90">
               Total Production: {formatNumber(totalCPS)} clicks/sec
             </p>
           </div>
           <button
             onClick={onClose}
-            className="text-white hover:bg-blue-600 rounded px-3 py-1 text-xl font-bold"
+            className="text-white hover:bg-blue-600 rounded px-2 sm:px-3 py-1 text-lg sm:text-xl font-bold"
           >
             ✕
           </button>
         </div>
 
         {/* Upgrades List */}
-        <div className="overflow-y-auto p-4 space-y-3">
+        <div className="overflow-y-auto p-2 sm:p-4 space-y-2 sm:space-y-3">
           {upgrades.map((upgrade) => {
             const count = upgradeState[upgrade.id] || 0;
             const price = calculateUpgradePrice(upgrade.base_price, count);
@@ -60,27 +60,27 @@ export default function UpgradeShop({
             return (
               <div
                 key={upgrade.id}
-                className={`border rounded-lg p-4 flex items-center justify-between ${
+                className={`border rounded-lg p-3 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 ${
                   canAfford
                     ? 'bg-green-50 border-green-300 hover:bg-green-100'
                     : 'bg-gray-50 border-gray-300'
                 } transition-colors`}
               >
-                <div className="flex items-center gap-4 flex-1">
-                  <div className="text-4xl">{upgrade.icon}</div>
-                  <div className="flex-1">
-                    <h3 className="font-bold text-lg text-black">
+                <div className="flex items-center gap-3 sm:gap-4 flex-1 w-full sm:w-auto">
+                  <div className="text-2xl sm:text-3xl md:text-4xl flex-shrink-0">{upgrade.icon}</div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-base sm:text-lg text-black">
                       {upgrade.name}
                       {count > 0 && (
-                        <span className="ml-2 text-sm text-blue-600">
+                        <span className="ml-2 text-xs sm:text-sm text-blue-600">
                           ({count})
                         </span>
                       )}
                     </h3>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-xs sm:text-sm text-gray-600 break-words">
                       {upgrade.description}
                     </p>
-                    <div className="flex gap-4 mt-1 text-xs text-gray-700">
+                    <div className="flex flex-wrap gap-2 sm:gap-4 mt-1 text-xs text-gray-700">
                       <span>
                         Each: <strong>{formatNumber(effectiveCPS)}/s</strong>
                         {multiplier > 1 && (
@@ -98,7 +98,7 @@ export default function UpgradeShop({
                 <button
                   onClick={() => onPurchase(upgrade.id)}
                   disabled={!canAfford}
-                  className={`px-6 py-2 rounded font-semibold text-white transition-colors ${
+                  className={`px-4 sm:px-6 py-2 rounded font-semibold text-white transition-colors text-sm sm:text-base w-full sm:w-auto flex-shrink-0 ${
                     canAfford
                       ? 'bg-blue-500 hover:bg-blue-600 cursor-pointer'
                       : 'bg-gray-400 cursor-not-allowed'
@@ -112,8 +112,8 @@ export default function UpgradeShop({
         </div>
 
         {/* Footer */}
-        <div className="border-t p-4 bg-gray-50">
-          <p className="text-center text-sm text-gray-600">
+        <div className="border-t p-3 sm:p-4 bg-gray-50">
+          <p className="text-center text-xs sm:text-sm text-gray-600">
             Your Clicks: <strong className="text-black">{formatNumber(score)}</strong>
           </p>
         </div>

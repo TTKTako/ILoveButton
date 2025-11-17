@@ -78,7 +78,9 @@ export default function UpgradePopup({
   if (purchasableUpgrades.length === 0) return null;
 
   return (
-    <div className="fixed top-4 right-4 z-40 flex flex-col gap-2 max-h-[calc(100vh-2rem)] overflow-y-auto bg-white/5 backdrop-blur-sm rounded-lg p-2">
+    <div className={`fixed top-2 sm:top-4 right-2 sm:right-4 z-40 flex flex-col gap-1.5 sm:gap-2 bg-white/5 backdrop-blur-sm rounded-lg p-1.5 sm:p-2 max-w-[calc(100vw-1rem)] sm:max-w-none ${
+      purchasableUpgrades.length > 3 ? 'max-h-[300px] sm:max-h-[400px] overflow-y-auto' : ''
+    }`}>
       {purchasableUpgrades.map(({ upgrade, level, price }) => {
         const canAfford = score >= price;
         const levelData = upgrade.levels.find(l => l.level === level);
@@ -87,7 +89,7 @@ export default function UpgradePopup({
         return (
           <div
             key={`${upgrade.id}-${level}`}
-            className={`bg-white border-2 rounded-lg shadow-lg p-3 min-w-[280px] transition-all ${
+            className={`bg-white border-2 rounded-lg shadow-lg p-2 sm:p-3 min-w-[240px] sm:min-w-[280px] transition-all ${
               isEndgame
                 ? 'border-purple-500 bg-gradient-to-r from-purple-100 to-pink-100 animate-pulse'
                 : canAfford 
@@ -96,15 +98,15 @@ export default function UpgradePopup({
             }`}
             onClick={() => canAfford && onPurchase(upgrade.id, level)}
           >
-            <div className="flex items-start gap-3">
-              <div className={`text-3xl ${isEndgame ? 'animate-bounce' : ''}`}>{upgrade.icon}</div>
-              <div className="flex-1">
-                <div className="flex items-center justify-between mb-1">
-                  <h3 className={`font-bold text-sm ${isEndgame ? 'text-purple-700' : 'text-black'}`}>
+            <div className="flex items-start gap-2 sm:gap-3">
+              <div className={`text-2xl sm:text-3xl flex-shrink-0 ${isEndgame ? 'animate-bounce' : ''}`}>{upgrade.icon}</div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between mb-1 gap-2">
+                  <h3 className={`font-bold text-xs sm:text-sm ${isEndgame ? 'text-purple-700' : 'text-black'} truncate`}>
                     {upgrade.name}
-                    {!isEndgame && <span className="ml-1 text-xs text-blue-600">Lv.{level}</span>}
+                    {!isEndgame && <span className="ml-1 text-[10px] sm:text-xs text-blue-600">Lv.{level}</span>}
                   </h3>
-                  <div className={`text-xs font-semibold px-2 py-1 rounded ${
+                  <div className={`text-[10px] sm:text-xs font-semibold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded whitespace-nowrap flex-shrink-0 ${
                     isEndgame
                       ? 'bg-purple-200 text-purple-800'
                       : canAfford ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
@@ -112,16 +114,16 @@ export default function UpgradePopup({
                     {formatNumber(price)}
                   </div>
                 </div>
-                <p className={`text-xs mb-1 ${isEndgame ? 'text-purple-600 font-semibold' : 'text-gray-600'}`}>
+                <p className={`text-[10px] sm:text-xs mb-1 ${isEndgame ? 'text-purple-600 font-semibold' : 'text-gray-600'} line-clamp-2`}>
                   {upgrade.description}
                 </p>
                 {levelData && !isEndgame && (
-                  <div className="text-xs text-purple-600 font-semibold">
+                  <div className="text-[10px] sm:text-xs text-purple-600 font-semibold">
                     ×{levelData.multiplier} multiplier
                   </div>
                 )}
                 {isEndgame && (
-                  <div className="text-xs text-purple-700 font-bold mt-1">
+                  <div className="text-[10px] sm:text-xs text-purple-700 font-bold mt-1">
                     ⚠️ THE FINAL UPGRADE ⚠️
                   </div>
                 )}

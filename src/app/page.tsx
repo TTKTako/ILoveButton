@@ -424,22 +424,22 @@ export default function Home() {
 
       {/* Endgame Choice Modal */}
       {showEndgameChoice && (
-        <div className="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-lg flex items-center justify-center">
-          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md text-center">
-            <h1 className="text-4xl font-bold text-black mb-4">🌌 You've Reached The End! 🌌</h1>
-            <p className="text-lg text-gray-700 mb-8">
+        <div className="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-lg flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl p-4 sm:p-6 md:p-8 max-w-md w-full text-center">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-black mb-4">🌌 You've Reached The End! 🌌</h1>
+            <p className="text-sm sm:text-base md:text-lg text-gray-700 mb-6 sm:mb-8">
               You have become the Clicker of the Galaxy. What will you do now?
             </p>
-            <div className="flex gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
               <button
                 onClick={handleReplay}
-                className="px-8 py-4 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg text-lg transition-all hover:scale-105"
+                className="px-4 sm:px-6 md:px-8 py-3 sm:py-4 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg text-sm sm:text-base md:text-lg transition-all hover:scale-105"
               >
                 🔄 Replay from Start
               </button>
               <button
                 onClick={handleContinuePlaying}
-                className="px-8 py-4 bg-purple-500 hover:bg-purple-600 text-white font-bold rounded-lg text-lg transition-all hover:scale-105"
+                className="px-4 sm:px-6 md:px-8 py-3 sm:py-4 bg-purple-500 hover:bg-purple-600 text-white font-bold rounded-lg text-sm sm:text-base md:text-lg transition-all hover:scale-105"
               >
                 🌠 Continue in Galaxy Mode
               </button>
@@ -451,13 +451,13 @@ export default function Home() {
       {/* Welcome Popup for First Time Visitors */}
       {showWelcomePopup && (
         <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-lg flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-2xl w-full">
-            <h1 className="text-4xl font-bold text-center text-purple-600 mb-6">
+          <div className="bg-white rounded-2xl shadow-2xl p-4 sm:p-6 md:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-purple-600 mb-4 sm:mb-6">
               🎮 Welcome to I Love Button! 🎮
             </h1>
             
-            <div className="space-y-4 text-left mb-6">
-              <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+            <div className="space-y-3 sm:space-y-4 text-left mb-4 sm:mb-6">
+              <div className="bg-blue-50 p-3 sm:p-4 rounded-lg border-l-4 border-blue-500">
                 <h3 className="font-bold text-blue-900 mb-2">👨‍💻 Creator:</h3>
                 <p className="text-sm text-gray-700">
                   <strong>TTKTako</strong><br/>
@@ -495,7 +495,7 @@ export default function Home() {
 
             <button
               onClick={() => setShowWelcomePopup(false)}
-              className="w-full px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold rounded-lg text-xl transition-all hover:scale-105 shadow-lg"
+              className="w-full px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold rounded-lg text-lg sm:text-xl transition-all hover:scale-105 shadow-lg"
             >
               🚀 Start Clicking!
             </button>
@@ -505,18 +505,18 @@ export default function Home() {
 
       {!showEndgameVideo && (
         <>
-      <div className="mb-4 text-4xl font-bold text-black absolute top-4 flex flex-col gap-2 align-center justify-center text-center w-max z-50">
-        <h1 className="font-bold text-black text-3xl">{formatNumber(score)} Click(s)</h1>
-        <h1 className="font-semibold text-black text-lg">
+      <div className="mb-4 text-4xl font-bold text-black absolute top-4 flex flex-col gap-2 align-center justify-center text-center w-max z-50 px-2 sm:px-0">
+        <h1 className="font-bold text-black text-xl sm:text-2xl md:text-3xl">{formatNumber(score)} Click(s)</h1>
+        <h1 className="font-semibold text-black text-sm sm:text-base md:text-lg">
           Total: {formatNumber(totalCPS + effectiveManualCPS)} clicks/sec
         </h1>
-        <div className="text-sm text-gray-600">
+        <div className="text-xs sm:text-sm text-gray-600">
           Manual: {formatNumber(effectiveManualCPS)}/s | Auto: {formatNumber(totalCPS)}/s
         </div>
-        <div className="flex flex-row gap-2 text-lg justify-center">
+        <div className="flex flex-row gap-2 text-sm sm:text-base md:text-lg justify-center">
           <button
             onClick={() => setIsUpgradeShopOpen(true)}
-            className="shadow-lg px-4 py-1 border rounded text-black text-center bg-blue-100 hover:bg-blue-200 cursor-pointer relative"
+            className="shadow-lg px-3 py-1 sm:px-4 sm:py-2 border rounded text-black text-center bg-blue-100 hover:bg-blue-200 cursor-pointer relative"
           >
             Upgrade
             {canAffordAnyUpgrade && (
@@ -525,7 +525,7 @@ export default function Home() {
           </button>
           <button
             onClick={() => setIsSkinShopOpen(true)}
-            className="shadow-lg px-4 py-1 border rounded text-black text-center bg-yellow-100 hover:bg-yellow-200 cursor-pointer relative"
+            className="shadow-lg px-3 py-1 sm:px-4 sm:py-2 border rounded text-black text-center bg-yellow-100 hover:bg-yellow-200 cursor-pointer relative"
           >
             Skin
             {canAffordAnySkin && (
@@ -534,6 +534,16 @@ export default function Home() {
           </button>
         </div>
       </div>
+
+      {/* Settings Button - Top Left */}
+      <button
+        onClick={() => setShowWelcomePopup(true)}
+        className="absolute top-4 left-4 z-50 shadow-lg px-2 py-1 sm:px-4 sm:py-2 border rounded text-black text-center bg-gray-100 hover:bg-gray-200 cursor-pointer transition-all hover:scale-105 text-xs sm:text-sm md:text-base"
+        title="Settings & Info"
+      >
+        <span className="hidden sm:inline">⚙️ Settings</span>
+        <span className="sm:hidden">⚙️</span>
+      </button>
 
       {/* Upgrade Popup - Top Right Corner */}
       <UpgradePopup
@@ -544,19 +554,19 @@ export default function Home() {
         onPurchase={handlePurchaseSingleUpgrade}
       />
       
-      <div className="text-center h-2/3 flex flex-col justify-center z-1000">
+      <div className="text-center h-2/3 flex flex-col justify-center z-1000 px-4">
         <Image
           src={`/button/${buttonSkin}/${isPressed ? 'press' : 'unpress'}.png`}
           alt="Logo"
           width={200}
           height={200}
-          className="mx-auto cursor-pointer"
+          className="mx-auto cursor-pointer w-32 h-32 sm:w-40 sm:h-40 md:w-48 md:h-48 lg:w-52 lg:h-52"
           onClick={handleClick}
         />
       </div>
       
       <p
-        className="absolute bottom-3 right-4 text-sm text-gray-500 hover:underline hover:text-red-500 cursor-pointer"
+        className="absolute bottom-3 right-4 text-xs sm:text-sm text-gray-500 hover:underline hover:text-red-500 cursor-pointer"
         onClick={handleReset}
       >
         reset data...
