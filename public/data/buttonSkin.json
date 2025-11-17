@@ -17,6 +17,12 @@
             "name": "Popcat Skin",
             "value": "popcat",
             "price": 10000
+        },
+        {
+            "id": "cookie",
+            "name": "Respect The Original Cookie",
+            "value": "cookie",
+            "price": 1000000
         }
     ]
 }

@@ -45,11 +45,20 @@ export default function Home() {
     direction: 'left-to-right' | 'right-to-left' | 'top-to-bottom' | 'bottom-to-top';
     startPos: number;
   }>>([]);
+  const [cursorEffects, setCursorEffects] = useState<Array<{ 
+    id: number; 
+    startX: number; 
+    startY: number;
+    size: number;
+    curveDirection: 'left' | 'right';
+    force: number;
+  }>>([]);
   
   const clickTimestamps = useRef<number[]>([]);
   const hasLoadedData = useRef(false);
   const fallingClickIdRef = useRef(0);
   const memeIdRef = useRef(0);
+  const cursorEffectIdRef = useRef(0);
 
   // Load game data from JSON files
   useEffect(() => {
@@ -223,7 +232,7 @@ export default function Home() {
     };
   }, [upgrades, upgradeData]);
 
-  const handleClick = () => {
+  const handleClick = (event: React.MouseEvent<HTMLImageElement>) => {
     const clickValue = getManualClickValue(singleUpgrades, singleUpgradeData);
     setScore((prevScore) => safeAdd(prevScore, clickValue));
     setIsPressed(true);
@@ -241,6 +250,35 @@ export default function Home() {
     clickTimestamps.current = clickTimestamps.current.filter(
       timestamp => now - timestamp <= 1000
     );
+
+    // Create cursor effects (2-5 cursors)
+    const numCursors = 1; // 2-5 cursors
+    const buttonRect = event.currentTarget.getBoundingClientRect();
+    const buttonCenterX = buttonRect.left + buttonRect.width / 2;
+    const buttonCenterY = buttonRect.top + buttonRect.height / 2;
+
+    for (let i = 0; i < numCursors; i++) {
+      const cursorId = cursorEffectIdRef.current++;
+      const size = Math.random() * 20 + 15; // Random size between 15-35px
+      const curveDirection = Math.random() > 0.5 ? 'left' : 'right';
+      const force = Math.random() * 0.6 + 0.7; // Random force between 0.7-1.3 for varied trajectories
+      
+      setTimeout(() => {
+        setCursorEffects((prev) => [...prev, {
+          id: cursorId,
+          startX: buttonCenterX,
+          startY: buttonCenterY,
+          size,
+          curveDirection,
+          force,
+        }]);
+
+        // Remove cursor effect after animation completes
+        setTimeout(() => {
+          setCursorEffects((prev) => prev.filter((cursor) => cursor.id !== cursorId));
+        }, 1500);
+      }, i * 50); // Stagger the appearance slightly
+    }
   };
 
   const handlePurchaseUpgrade = (upgradeId: string) => {
@@ -680,6 +718,29 @@ export default function Home() {
         </div>
       ))}
 
+      {/* Cursor Effects */}
+      {cursorEffects.map((cursor) => (
+        <div
+          key={cursor.id}
+          style={{
+            position: 'fixed',
+            left: `${cursor.startX}px`,
+            top: `${cursor.startY}px`,
+            zIndex: 999,
+            animation: `cursorFloat${cursor.curveDirection === 'left' ? 'Left' : 'Right'}${Math.round(cursor.force * 10)} 1.5s ease-out forwards`,
+            pointerEvents: 'none',
+          }}
+        >
+          <Image
+            src="/click.webp"
+            alt="Click"
+            width={cursor.size}
+            height={cursor.size}
+            className="pointer-events-none"
+          />
+        </div>
+      ))}
+
       <style jsx>{`
         @keyframes fall {
           0% {
@@ -688,6 +749,216 @@ export default function Home() {
           }
           100% {
             transform: translateY(500px) rotate(360deg);
+            opacity: 0;
+          }
+        }
+        
+        @keyframes cursorFloatLeft7 {
+          0% {
+            transform: translate(0, 0) rotate(0deg);
+            opacity: 1;
+          }
+          50% {
+            transform: translate(-56px, -105px) rotate(-180deg);
+            opacity: 0.8;
+          }
+          100% {
+            transform: translate(-42px, 70px) rotate(-360deg);
+            opacity: 0;
+          }
+        }
+        
+        @keyframes cursorFloatLeft8 {
+          0% {
+            transform: translate(0, 0) rotate(0deg);
+            opacity: 1;
+          }
+          50% {
+            transform: translate(-64px, -120px) rotate(-180deg);
+            opacity: 0.8;
+          }
+          100% {
+            transform: translate(-48px, 80px) rotate(-360deg);
+            opacity: 0;
+          }
+        }
+        
+        @keyframes cursorFloatLeft9 {
+          0% {
+            transform: translate(0, 0) rotate(0deg);
+            opacity: 1;
+          }
+          50% {
+            transform: translate(-72px, -135px) rotate(-180deg);
+            opacity: 0.8;
+          }
+          100% {
+            transform: translate(-54px, 90px) rotate(-360deg);
+            opacity: 0;
+          }
+        }
+        
+        @keyframes cursorFloatLeft10 {
+          0% {
+            transform: translate(0, 0) rotate(0deg);
+            opacity: 1;
+          }
+          50% {
+            transform: translate(-80px, -150px) rotate(-180deg);
+            opacity: 0.8;
+          }
+          100% {
+            transform: translate(-60px, 100px) rotate(-360deg);
+            opacity: 0;
+          }
+        }
+        
+        @keyframes cursorFloatLeft11 {
+          0% {
+            transform: translate(0, 0) rotate(0deg);
+            opacity: 1;
+          }
+          50% {
+            transform: translate(-88px, -165px) rotate(-180deg);
+            opacity: 0.8;
+          }
+          100% {
+            transform: translate(-66px, 110px) rotate(-360deg);
+            opacity: 0;
+          }
+        }
+        
+        @keyframes cursorFloatLeft12 {
+          0% {
+            transform: translate(0, 0) rotate(0deg);
+            opacity: 1;
+          }
+          50% {
+            transform: translate(-96px, -180px) rotate(-180deg);
+            opacity: 0.8;
+          }
+          100% {
+            transform: translate(-72px, 120px) rotate(-360deg);
+            opacity: 0;
+          }
+        }
+        
+        @keyframes cursorFloatLeft13 {
+          0% {
+            transform: translate(0, 0) rotate(0deg);
+            opacity: 1;
+          }
+          50% {
+            transform: translate(-104px, -195px) rotate(-180deg);
+            opacity: 0.8;
+          }
+          100% {
+            transform: translate(-78px, 130px) rotate(-360deg);
+            opacity: 0;
+          }
+        }
+        
+        @keyframes cursorFloatRight7 {
+          0% {
+            transform: translate(0, 0) rotate(0deg);
+            opacity: 1;
+          }
+          50% {
+            transform: translate(56px, -105px) rotate(180deg);
+            opacity: 0.8;
+          }
+          100% {
+            transform: translate(42px, 70px) rotate(360deg);
+            opacity: 0;
+          }
+        }
+        
+        @keyframes cursorFloatRight8 {
+          0% {
+            transform: translate(0, 0) rotate(0deg);
+            opacity: 1;
+          }
+          50% {
+            transform: translate(64px, -120px) rotate(180deg);
+            opacity: 0.8;
+          }
+          100% {
+            transform: translate(48px, 80px) rotate(360deg);
+            opacity: 0;
+          }
+        }
+        
+        @keyframes cursorFloatRight9 {
+          0% {
+            transform: translate(0, 0) rotate(0deg);
+            opacity: 1;
+          }
+          50% {
+            transform: translate(72px, -135px) rotate(180deg);
+            opacity: 0.8;
+          }
+          100% {
+            transform: translate(54px, 90px) rotate(360deg);
+            opacity: 0;
+          }
+        }
+        
+        @keyframes cursorFloatRight10 {
+          0% {
+            transform: translate(0, 0) rotate(0deg);
+            opacity: 1;
+          }
+          50% {
+            transform: translate(80px, -150px) rotate(180deg);
+            opacity: 0.8;
+          }
+          100% {
+            transform: translate(60px, 100px) rotate(360deg);
+            opacity: 0;
+          }
+        }
+        
+        @keyframes cursorFloatRight11 {
+          0% {
+            transform: translate(0, 0) rotate(0deg);
+            opacity: 1;
+          }
+          50% {
+            transform: translate(88px, -165px) rotate(180deg);
+            opacity: 0.8;
+          }
+          100% {
+            transform: translate(66px, 110px) rotate(360deg);
+            opacity: 0;
+          }
+        }
+        
+        @keyframes cursorFloatRight12 {
+          0% {
+            transform: translate(0, 0) rotate(0deg);
+            opacity: 1;
+          }
+          50% {
+            transform: translate(96px, -180px) rotate(180deg);
+            opacity: 0.8;
+          }
+          100% {
+            transform: translate(72px, 120px) rotate(360deg);
+            opacity: 0;
+          }
+        }
+        
+        @keyframes cursorFloatRight13 {
+          0% {
+            transform: translate(0, 0) rotate(0deg);
+            opacity: 1;
+          }
+          50% {
+            transform: translate(104px, -195px) rotate(180deg);
+            opacity: 0.8;
+          }
+          100% {
+            transform: translate(78px, 130px) rotate(360deg);
             opacity: 0;
           }
         }
