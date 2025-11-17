@@ -29,9 +29,12 @@ export default function Home() {
   
   const [isUpgradeShopOpen, setIsUpgradeShopOpen] = useState(false);
   const [isSkinShopOpen, setIsSkinShopOpen] = useState(false);
+  const [adPosition, setAdPosition] = useState<{ x: number; y: number } | null>(null);
+  const [fallingClicks, setFallingClicks] = useState<Array<{ id: number; x: number; y: number }>>([]);
   
   const clickTimestamps = useRef<number[]>([]);
   const hasLoadedData = useRef(false);
+  const fallingClickIdRef = useRef(0);
 
   // Load game data from JSON files
   useEffect(() => {
@@ -110,6 +113,24 @@ export default function Home() {
     return () => clearInterval(interval);
   }, []);
 
+  // Random ad appearance
+  useEffect(() => {
+    const showRandomAd = () => {
+      // Random interval between 30-90 seconds
+      const randomDelay = Math.random() * 60000 + 30000;
+      
+      setTimeout(() => {
+        // Random position on screen (avoiding edges)
+        const x = Math.random() * (window.innerWidth - 150) + 50;
+        const y = Math.random() * (window.innerHeight - 150) + 50;
+        setAdPosition({ x, y });
+        showRandomAd(); // Schedule next ad
+      }, randomDelay);
+    };
+
+    showRandomAd();
+  }, []);
+
   const handleClick = () => {
     setScore((prevScore) => safeAdd(prevScore, 1));
     setIsPressed(true);
@@ -165,6 +186,25 @@ export default function Home() {
     if (purchasedSkins.includes(skinId)) {
       setButtonSkin(skin.value);
     }
+  };
+
+  const handleAdClick = () => {
+    if (!adPosition) return;
+    
+    const totalCPS = calculateTotalCPS(upgrades, upgradeData);
+    const reward = totalCPS > 0 ? totalCPS * 15 : 10;
+    setScore((prevScore) => safeAdd(prevScore, reward));
+    
+    // Create falling click effect
+    const clickId = fallingClickIdRef.current++;
+    setFallingClicks((prev) => [...prev, { id: clickId, x: adPosition.x, y: adPosition.y }]);
+    
+    // Remove falling click after animation
+    setTimeout(() => {
+      setFallingClicks((prev) => prev.filter((click) => click.id !== clickId));
+    }, 2000);
+    
+    setAdPosition(null);
   };
 
   const handleReset = () => {
@@ -265,6 +305,63 @@ export default function Home() {
         onPurchase={handlePurchaseSkin}
         onEquip={handleEquipSkin}
       />
+
+      {/* Random Ad Button */}
+      {adPosition && (
+        <div
+          style={{
+            position: 'fixed',
+            left: `${adPosition.x}px`,
+            top: `${adPosition.y}px`,
+            zIndex: 1000,
+          }}
+          className="cursor-pointer animate-bounce"
+          onClick={handleAdClick}
+        >
+          <Image
+            src="/ads.png"
+            alt="Special Bonus"
+            width={100}
+            height={100}
+            className="hover:scale-110 transition-transform drop-shadow-2xl"
+          />
+        </div>
+      )}
+
+      {/* Falling Click Effects */}
+      {fallingClicks.map((click) => (
+        <div
+          key={click.id}
+          style={{
+            position: 'fixed',
+            left: `${click.x}px`,
+            top: `${click.y}px`,
+            zIndex: 999,
+            animation: 'fall 2s ease-in forwards',
+          }}
+        >
+          <Image
+            src="/click.webp"
+            alt="Click"
+            width={50}
+            height={50}
+            className="pointer-events-none"
+          />
+        </div>
+      ))}
+
+      <style jsx>{`
+        @keyframes fall {
+          0% {
+            transform: translateY(0) rotate(0deg);
+            opacity: 1;
+          }
+          100% {
+            transform: translateY(500px) rotate(360deg);
+            opacity: 0;
+          }
+        }
+      `}</style>
     </div>
   );
 }
