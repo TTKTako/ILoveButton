@@ -86,14 +86,27 @@ export const resetGameState = (): void => {
 };
 
 export const formatNumber = (num: number): string => {
-  if (num >= 1000000000) {
-    return (num / 1000000000).toFixed(2) + 'B';
+  // Handle very large numbers with scientific notation
+  if (num >= 1e21) {
+    return num.toExponential(2);
   }
-  if (num >= 1000000) {
-    return (num / 1000000).toFixed(2) + 'M';
+  if (num >= 1e18) {
+    return (num / 1e18).toFixed(2) + 'Qi'; // Quintillion
   }
-  if (num >= 1000) {
-    return (num / 1000).toFixed(2) + 'K';
+  if (num >= 1e15) {
+    return (num / 1e15).toFixed(2) + 'Qa'; // Quadrillion
+  }
+  if (num >= 1e12) {
+    return (num / 1e12).toFixed(2) + 'T'; // Trillion
+  }
+  if (num >= 1e9) {
+    return (num / 1e9).toFixed(2) + 'B'; // Billion
+  }
+  if (num >= 1e6) {
+    return (num / 1e6).toFixed(2) + 'M'; // Million
+  }
+  if (num >= 1e3) {
+    return (num / 1e3).toFixed(2) + 'K'; // Thousand
   }
   return num.toFixed(2);
 };
