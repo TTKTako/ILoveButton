@@ -182,12 +182,12 @@
                 {"level": 2, "price": 500, "multiplier": 2, "unlockRequirement": 0},
                 {"level": 3, "price": 5000, "multiplier": 2, "unlockRequirement": 0},
                 {"level": 4, "price": 50000, "multiplier": 2, "unlockRequirement": 0},
-                {"level": 5, "price": 500000, "multiplier": 2, "unlockRequirement": 0},
-                {"level": 6, "price": 5000000, "multiplier": 2, "unlockRequirement": 0},
-                {"level": 7, "price": 50000000, "multiplier": 2, "unlockRequirement": 0},
-                {"level": 8, "price": 500000000, "multiplier": 2, "unlockRequirement": 0},
-                {"level": 9, "price": 5000000000, "multiplier": 2, "unlockRequirement": 0},
-                {"level": 10, "price": 50000000000, "multiplier": 2, "unlockRequirement": 0}
+                {"level": 5, "price": 500000, "multiplier": 2.5, "unlockRequirement": 0},
+                {"level": 6, "price": 5000000, "multiplier": 3, "unlockRequirement": 0},
+                {"level": 7, "price": 50000000, "multiplier": 4, "unlockRequirement": 0},
+                {"level": 8, "price": 500000000, "multiplier": 4, "unlockRequirement": 0},
+                {"level": 9, "price": 5000000000, "multiplier": 4, "unlockRequirement": 0},
+                {"level": 10, "price": 50000000000, "multiplier": 8, "unlockRequirement": 0}
             ]
         },
         {
@@ -207,6 +207,16 @@
                 {"level": 8, "price": 1000000000000, "multiplier": 1.5, "unlockRequirement": 0},
                 {"level": 9, "price": 10000000000000, "multiplier": 1.5, "unlockRequirement": 0},
                 {"level": 10, "price": 100000000000000, "multiplier": 2, "unlockRequirement": 0}
+            ]
+        },
+        {
+            "id": "endgame_upgrade",
+            "name": "Clicker Of The Galaxy",
+            "baseUpgradeId": "endgame",
+            "description": "Ascend to become the ultimate clicker and witness the cosmic truth",
+            "icon": "🌌",
+            "levels": [
+                {"level": 1, "price": 999999999999999999, "multiplier": 1, "unlockRequirement": 0}
             ]
         }
     ]

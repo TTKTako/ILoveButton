@@ -33,6 +33,9 @@ export default function Home() {
   
   const [isUpgradeShopOpen, setIsUpgradeShopOpen] = useState(false);
   const [isSkinShopOpen, setIsSkinShopOpen] = useState(false);
+  const [showEndgameVideo, setShowEndgameVideo] = useState(false);
+  const [showEndgameChoice, setShowEndgameChoice] = useState(false);
+  const [isGalaxyMode, setIsGalaxyMode] = useState(false);
   const [adPosition, setAdPosition] = useState<{ x: number; y: number } | null>(null);
   const [fallingClicks, setFallingClicks] = useState<Array<{ id: number; x: number; y: number }>>([]);
   const [floatingMemes, setFloatingMemes] = useState<Array<{ 
@@ -320,6 +323,7 @@ export default function Home() {
     const baseCount = upgrades[upgrade.baseUpgradeId] || 0;
     if (upgrade.baseUpgradeId !== 'manual' && 
         upgrade.baseUpgradeId !== 'global' && 
+        upgrade.baseUpgradeId !== 'endgame' &&
         baseCount < levelData.unlockRequirement) {
       return;
     }
@@ -333,6 +337,11 @@ export default function Home() {
         [level]: true,
       },
     }));
+
+    // Check if this is the endgame upgrade
+    if (upgradeId === 'endgame_upgrade') {
+      setShowEndgameVideo(true);
+    }
   };
 
   const totalCPS = calculateTotalCPS(upgrades, upgradeData, singleUpgrades, singleUpgradeData);
@@ -352,8 +361,83 @@ export default function Home() {
   const manualClickValue = getManualClickValue(singleUpgrades, singleUpgradeData);
   const effectiveManualCPS = clicksPerSec * manualClickValue;
 
+  const handleReplay = () => {
+    setScore(0);
+    setUpgrades({});
+    setPurchasedSkins(["default"]);
+    setButtonSkin("default");
+    setSingleUpgrades({});
+    clickTimestamps.current = [];
+    setClicksPerSec(0);
+    setShowEndgameVideo(false);
+    setShowEndgameChoice(false);
+    setIsGalaxyMode(false);
+    resetGameState();
+  };
+
+  const handleContinuePlaying = () => {
+    setShowEndgameChoice(false);
+    setIsGalaxyMode(true);
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-white flex-col">
+    <div className="flex min-h-screen items-center justify-center bg-white flex-col relative overflow-hidden">
+      {/* Galaxy Background Video */}
+      {isGalaxyMode && (
+        <video
+          autoPlay
+          loop
+          muted
+          className="fixed inset-0 w-full h-full object-cover z-0"
+        >
+          <source src="/blackhole.mp4" type="video/mp4" />
+        </video>
+      )}
+
+      {/* Endgame Video */}
+      {showEndgameVideo && !showEndgameChoice && (
+        <div className="fixed inset-0 z-[9999] bg-black flex items-center justify-center">
+          <video
+            autoPlay
+            onEnded={() => {
+              setShowEndgameVideo(false);
+              setShowEndgameChoice(true);
+            }}
+            className="w-full h-full object-contain"
+          >
+            <source src="/endgame.mp4" type="video/mp4" />
+          </video>
+        </div>
+      )}
+
+      {/* Endgame Choice Modal */}
+      {showEndgameChoice && (
+        <div className="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-lg flex items-center justify-center">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md text-center">
+            <h1 className="text-4xl font-bold text-black mb-4">🌌 You've Reached The End! 🌌</h1>
+            <p className="text-lg text-gray-700 mb-8">
+              You have become the Clicker of the Galaxy. What will you do now?
+            </p>
+            <div className="flex gap-4 justify-center">
+              <button
+                onClick={handleReplay}
+                className="px-8 py-4 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg text-lg transition-all hover:scale-105"
+              >
+                🔄 Replay from Start
+              </button>
+              <button
+                onClick={handleContinuePlaying}
+                className="px-8 py-4 bg-purple-500 hover:bg-purple-600 text-white font-bold rounded-lg text-lg transition-all hover:scale-105"
+              >
+                🌠 Continue in Galaxy Mode
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {!showEndgameVideo && (
+        <>
       <div className="mb-4 text-4xl font-bold text-black absolute top-4 flex flex-col gap-2 align-center justify-center text-center w-max z-50">
         <h1 className="font-bold text-black text-3xl">{formatNumber(score)} Click(s)</h1>
         <h1 className="font-semibold text-black text-lg">
@@ -587,6 +671,8 @@ export default function Home() {
           }
         }
       `}</style>
+        </>
+      )}
     </div>
   );
 }
