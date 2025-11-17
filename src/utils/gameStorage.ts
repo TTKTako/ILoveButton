@@ -1,4 +1,4 @@
-import { GameState, UpgradeState } from '@/types/game';
+import { GameState, UpgradeState, SingleUpgrade, SingleUpgradeState } from '@/types/game';
 
 const GAME_STATE_KEY = 'buttonClickerGameState';
 const MAX_SAFE_NUMBER = 2000000000; // 2 billion to prevent overflow
@@ -20,16 +20,65 @@ export const calculateUpgradePrice = (basePrice: number, count: number): number 
 
 export const calculateTotalCPS = (
   upgrades: UpgradeState,
-  upgradeData: Array<{ id: string; base_cps: number }>
+  upgradeData: Array<{ id: string; base_cps: number }>,
+  singleUpgrades?: SingleUpgradeState,
+  singleUpgradeData?: SingleUpgrade[]
 ): number => {
   let totalCPS = 0;
   
   upgradeData.forEach((upgrade) => {
     const count = upgrades[upgrade.id] || 0;
-    totalCPS += upgrade.base_cps * count;
+    let baseCPS = upgrade.base_cps * count;
+    
+    // Apply single upgrade multipliers for this specific upgrade
+    if (singleUpgrades && singleUpgradeData) {
+      const multiplier = getUpgradeMultiplier(upgrade.id, singleUpgrades, singleUpgradeData);
+      baseCPS *= multiplier;
+    }
+    
+    totalCPS += baseCPS;
   });
   
+  // Apply global multiplier
+  if (singleUpgrades && singleUpgradeData) {
+    const globalMultiplier = getUpgradeMultiplier('global', singleUpgrades, singleUpgradeData);
+    totalCPS *= globalMultiplier;
+  }
+  
   return Math.min(totalCPS, MAX_SAFE_NUMBER);
+};
+
+export const getUpgradeMultiplier = (
+  baseUpgradeId: string,
+  singleUpgrades: SingleUpgradeState,
+  singleUpgradeData: SingleUpgrade[]
+): number => {
+  let multiplier = 1;
+  
+  // Find all single upgrades that affect this base upgrade
+  const relevantUpgrades = singleUpgradeData.filter(
+    (su) => su.baseUpgradeId === baseUpgradeId
+  );
+  
+  relevantUpgrades.forEach((singleUpgrade) => {
+    const upgradeState = singleUpgrades[singleUpgrade.id] || {};
+    
+    // Apply all owned levels (they stack)
+    singleUpgrade.levels.forEach((levelData) => {
+      if (upgradeState[levelData.level]) {
+        multiplier *= levelData.multiplier;
+      }
+    });
+  });
+  
+  return multiplier;
+};
+
+export const getManualClickValue = (
+  singleUpgrades: SingleUpgradeState,
+  singleUpgradeData: SingleUpgrade[]
+): number => {
+  return getUpgradeMultiplier('manual', singleUpgrades, singleUpgradeData);
 };
 
 export const getDefaultGameState = (): GameState => ({
@@ -37,6 +86,7 @@ export const getDefaultGameState = (): GameState => ({
   upgrades: {},
   purchasedSkins: ['default'],
   equippedSkin: 'default',
+  singleUpgrades: {},
 });
 
 export const saveGameState = (state: GameState): void => {
@@ -47,6 +97,7 @@ export const saveGameState = (state: GameState): void => {
       upgrades: { ...state.upgrades },
       purchasedSkins: [...state.purchasedSkins],
       equippedSkin: state.equippedSkin,
+      singleUpgrades: state.singleUpgrades || {},
     };
     
     localStorage.setItem(GAME_STATE_KEY, JSON.stringify(safeState));
@@ -70,6 +121,7 @@ export const loadGameState = (): GameState => {
       upgrades: state.upgrades || {},
       purchasedSkins: state.purchasedSkins || ['default'],
       equippedSkin: state.equippedSkin || 'default',
+      singleUpgrades: state.singleUpgrades || {},
     };
   } catch (error) {
     console.error('Failed to load game state:', error);

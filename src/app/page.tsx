@@ -4,7 +4,8 @@ import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import UpgradeShop from "@/components/UpgradeShop";
 import SkinShop from "@/components/SkinShop";
-import { Upgrade, ButtonSkin, GameState, UpgradeState } from "@/types/game";
+import UpgradePopup from "@/components/UpgradePopup";
+import { Upgrade, ButtonSkin, GameState, UpgradeState, SingleUpgrade, SingleUpgradeState } from "@/types/game";
 import {
   loadGameState,
   saveGameState,
@@ -14,6 +15,7 @@ import {
   safeAdd,
   safeSubtract,
   formatNumber,
+  getManualClickValue,
 } from "@/utils/gameStorage";
 
 export default function Home() {
@@ -23,9 +25,11 @@ export default function Home() {
   const [buttonSkin, setButtonSkin] = useState("default");
   const [upgrades, setUpgrades] = useState<UpgradeState>({});
   const [purchasedSkins, setPurchasedSkins] = useState<string[]>(["default"]);
+  const [singleUpgrades, setSingleUpgrades] = useState<SingleUpgradeState>({});
   
   const [upgradeData, setUpgradeData] = useState<Upgrade[]>([]);
   const [skinData, setSkinData] = useState<ButtonSkin[]>([]);
+  const [singleUpgradeData, setSingleUpgradeData] = useState<SingleUpgrade[]>([]);
   
   const [isUpgradeShopOpen, setIsUpgradeShopOpen] = useState(false);
   const [isSkinShopOpen, setIsSkinShopOpen] = useState(false);
@@ -47,16 +51,19 @@ export default function Home() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [upgradeRes, skinRes] = await Promise.all([
+        const [upgradeRes, skinRes, singleUpgradeRes] = await Promise.all([
           fetch("/data/upgrade.json"),
           fetch("/data/buttonSkin.json"),
+          fetch("/data/singleupgrade.json"),
         ]);
         
         const upgradeJson = await upgradeRes.json();
         const skinJson = await skinRes.json();
+        const singleUpgradeJson = await singleUpgradeRes.json();
         
         setUpgradeData(upgradeJson.upgrades || []);
         setSkinData(skinJson.ButtonSkins || []);
+        setSingleUpgradeData(singleUpgradeJson.singleUpgrades || []);
       } catch (error) {
         console.error("Failed to load game data:", error);
       }
@@ -75,6 +82,7 @@ export default function Home() {
     setUpgrades(gameState.upgrades);
     setPurchasedSkins(gameState.purchasedSkins);
     setButtonSkin(gameState.equippedSkin);
+    setSingleUpgrades(gameState.singleUpgrades || {});
   }, []);
 
   // Save game state whenever it changes
@@ -86,16 +94,17 @@ export default function Home() {
       upgrades,
       purchasedSkins,
       equippedSkin: buttonSkin,
+      singleUpgrades,
     };
     
     saveGameState(gameState);
-  }, [score, upgrades, purchasedSkins, buttonSkin]);
+  }, [score, upgrades, purchasedSkins, buttonSkin, singleUpgrades]);
 
   // Auto-click from upgrades (CPS)
   useEffect(() => {
     if (upgradeData.length === 0) return; // Wait for upgrade data to load
     
-    const totalCPS = calculateTotalCPS(upgrades, upgradeData);
+    const totalCPS = calculateTotalCPS(upgrades, upgradeData, singleUpgrades, singleUpgradeData);
     
     if (totalCPS > 0) {
       const interval = setInterval(() => {
@@ -104,7 +113,7 @@ export default function Home() {
       
       return () => clearInterval(interval);
     }
-  }, [upgrades, upgradeData]);
+  }, [upgrades, upgradeData, singleUpgrades, singleUpgradeData]);
 
   // Calculate manual clicks per second
   useEffect(() => {
@@ -204,7 +213,8 @@ export default function Home() {
   }, [upgrades, upgradeData]);
 
   const handleClick = () => {
-    setScore((prevScore) => safeAdd(prevScore, 1));
+    const clickValue = getManualClickValue(singleUpgrades, singleUpgradeData);
+    setScore((prevScore) => safeAdd(prevScore, clickValue));
     setIsPressed(true);
     setTimeout(() => setIsPressed(false), 150);
     
@@ -263,7 +273,7 @@ export default function Home() {
   const handleAdClick = () => {
     if (!adPosition) return;
     
-    const totalCPS = calculateTotalCPS(upgrades, upgradeData);
+    const totalCPS = calculateTotalCPS(upgrades, upgradeData, singleUpgrades, singleUpgradeData);
     const reward = totalCPS > 0 ? totalCPS * 15 : 10;
     setScore((prevScore) => safeAdd(prevScore, reward));
     
@@ -285,13 +295,47 @@ export default function Home() {
       setUpgrades({});
       setPurchasedSkins(["default"]);
       setButtonSkin("default");
+      setSingleUpgrades({});
       clickTimestamps.current = [];
       setClicksPerSec(0);
       resetGameState();
     }
   };
 
-  const totalCPS = calculateTotalCPS(upgrades, upgradeData);
+  const handlePurchaseSingleUpgrade = (upgradeId: string, level: number) => {
+    const upgrade = singleUpgradeData.find((u) => u.id === upgradeId);
+    if (!upgrade) return;
+    
+    const levelData = upgrade.levels.find((l) => l.level === level);
+    if (!levelData) return;
+    
+    // Check if already owned
+    const upgradeState = singleUpgrades[upgradeId] || {};
+    if (upgradeState[level]) return;
+    
+    // Check price
+    if (score < levelData.price) return;
+    
+    // Check unlock requirement
+    const baseCount = upgrades[upgrade.baseUpgradeId] || 0;
+    if (upgrade.baseUpgradeId !== 'manual' && 
+        upgrade.baseUpgradeId !== 'global' && 
+        baseCount < levelData.unlockRequirement) {
+      return;
+    }
+    
+    // Purchase
+    setScore((prevScore) => safeSubtract(prevScore, levelData.price));
+    setSingleUpgrades((prev) => ({
+      ...prev,
+      [upgradeId]: {
+        ...(prev[upgradeId] || {}),
+        [level]: true,
+      },
+    }));
+  };
+
+  const totalCPS = calculateTotalCPS(upgrades, upgradeData, singleUpgrades, singleUpgradeData);
 
   // Check if any upgrade is affordable
   const canAffordAnyUpgrade = upgradeData.some((upgrade) => {
@@ -305,15 +349,18 @@ export default function Home() {
     return !purchasedSkins.includes(skin.id) && score >= skin.price;
   });
 
+  const manualClickValue = getManualClickValue(singleUpgrades, singleUpgradeData);
+  const effectiveManualCPS = clicksPerSec * manualClickValue;
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-white flex-col">
       <div className="mb-4 text-4xl font-bold text-black absolute top-4 flex flex-col gap-2 align-center justify-center text-center w-max z-50">
         <h1 className="font-bold text-black text-3xl">{formatNumber(score)} Click(s)</h1>
         <h1 className="font-semibold text-black text-lg">
-          Total: {formatNumber(totalCPS + clicksPerSec)} clicks/sec
+          Total: {formatNumber(totalCPS + effectiveManualCPS)} clicks/sec
         </h1>
         <div className="text-sm text-gray-600">
-          Manual: {clicksPerSec.toFixed(2)}/s | Auto: {formatNumber(totalCPS)}/s
+          Manual: {formatNumber(effectiveManualCPS)}/s | Auto: {formatNumber(totalCPS)}/s
         </div>
         <div className="flex flex-row gap-2 text-lg justify-center">
           <button
@@ -336,6 +383,15 @@ export default function Home() {
           </button>
         </div>
       </div>
+
+      {/* Upgrade Popup - Top Right Corner */}
+      <UpgradePopup
+        singleUpgrades={singleUpgradeData}
+        singleUpgradeState={singleUpgrades}
+        baseUpgradeState={upgrades}
+        score={score}
+        onPurchase={handlePurchaseSingleUpgrade}
+      />
       
       <div className="text-center h-2/3 flex flex-col justify-center z-1000">
         <Image
@@ -364,6 +420,8 @@ export default function Home() {
         score={score}
         onPurchase={handlePurchaseUpgrade}
         totalCPS={totalCPS}
+        singleUpgrades={singleUpgrades}
+        singleUpgradeData={singleUpgradeData}
       />
 
       {/* Skin Shop Modal */}

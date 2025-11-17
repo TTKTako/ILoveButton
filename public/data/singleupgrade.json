@@ -1,12 +1,213 @@
 {
-    "upgrades": [
+    "singleUpgrades": [
         {
-            "id": "cursor",
-            "name": "Auto Clicker",
-            "description": "Automatically clicks the button for you",
-            "base_price": 100,
-            "base_cps": 0.1,
-            "icon": "🖱️"
+            "id": "cursor_upgrade",
+            "name": "Reinforced Cursors",
+            "baseUpgradeId": "cursor",
+            "description": "Makes your Auto Clickers twice as efficient",
+            "icon": "🖱️",
+            "levels": [
+                {"level": 1, "price": 1000, "multiplier": 2, "unlockRequirement": 1},
+                {"level": 2, "price": 5000, "multiplier": 2, "unlockRequirement": 5},
+                {"level": 3, "price": 50000, "multiplier": 2, "unlockRequirement": 10},
+                {"level": 4, "price": 500000, "multiplier": 2, "unlockRequirement": 25},
+                {"level": 5, "price": 5000000, "multiplier": 2, "unlockRequirement": 50},
+                {"level": 6, "price": 50000000, "multiplier": 2, "unlockRequirement": 100},
+                {"level": 7, "price": 500000000, "multiplier": 2, "unlockRequirement": 150},
+                {"level": 8, "price": 5000000000, "multiplier": 2, "unlockRequirement": 200},
+                {"level": 9, "price": 50000000000, "multiplier": 2, "unlockRequirement": 250},
+                {"level": 10, "price": 500000000000, "multiplier": 2, "unlockRequirement": 300}
+            ]
+        },
+        {
+            "id": "grandma_upgrade",
+            "name": "Bingo Center",
+            "baseUpgradeId": "grandma",
+            "description": "Grandmas are twice as efficient",
+            "icon": "👵",
+            "levels": [
+                {"level": 1, "price": 5000, "multiplier": 2, "unlockRequirement": 1},
+                {"level": 2, "price": 25000, "multiplier": 2, "unlockRequirement": 5},
+                {"level": 3, "price": 250000, "multiplier": 2, "unlockRequirement": 10},
+                {"level": 4, "price": 2500000, "multiplier": 2, "unlockRequirement": 25},
+                {"level": 5, "price": 25000000, "multiplier": 2, "unlockRequirement": 50},
+                {"level": 6, "price": 250000000, "multiplier": 2, "unlockRequirement": 100},
+                {"level": 7, "price": 2500000000, "multiplier": 2, "unlockRequirement": 150},
+                {"level": 8, "price": 25000000000, "multiplier": 2, "unlockRequirement": 200},
+                {"level": 9, "price": 250000000000, "multiplier": 2, "unlockRequirement": 250},
+                {"level": 10, "price": 2500000000000, "multiplier": 2, "unlockRequirement": 300}
+            ]
+        },
+        {
+            "id": "farm_upgrade",
+            "name": "Fertilized Soil",
+            "baseUpgradeId": "farm",
+            "description": "Button Farms are twice as efficient",
+            "icon": "🚜",
+            "levels": [
+                {"level": 1, "price": 55000, "multiplier": 2, "unlockRequirement": 1},
+                {"level": 2, "price": 275000, "multiplier": 2, "unlockRequirement": 5},
+                {"level": 3, "price": 2750000, "multiplier": 2, "unlockRequirement": 10},
+                {"level": 4, "price": 27500000, "multiplier": 2, "unlockRequirement": 25},
+                {"level": 5, "price": 275000000, "multiplier": 2, "unlockRequirement": 50},
+                {"level": 6, "price": 2750000000, "multiplier": 2, "unlockRequirement": 100},
+                {"level": 7, "price": 27500000000, "multiplier": 2, "unlockRequirement": 150},
+                {"level": 8, "price": 275000000000, "multiplier": 2, "unlockRequirement": 200},
+                {"level": 9, "price": 2750000000000, "multiplier": 2, "unlockRequirement": 250},
+                {"level": 10, "price": 27500000000000, "multiplier": 2, "unlockRequirement": 300}
+            ]
+        },
+        {
+            "id": "mine_upgrade",
+            "name": "Sugar Gas",
+            "baseUpgradeId": "mine",
+            "description": "Button Mines are twice as efficient",
+            "icon": "⛏️",
+            "levels": [
+                {"level": 1, "price": 600000, "multiplier": 2, "unlockRequirement": 1},
+                {"level": 2, "price": 3000000, "multiplier": 2, "unlockRequirement": 5},
+                {"level": 3, "price": 30000000, "multiplier": 2, "unlockRequirement": 10},
+                {"level": 4, "price": 300000000, "multiplier": 2, "unlockRequirement": 25},
+                {"level": 5, "price": 3000000000, "multiplier": 2, "unlockRequirement": 50},
+                {"level": 6, "price": 30000000000, "multiplier": 2, "unlockRequirement": 100},
+                {"level": 7, "price": 300000000000, "multiplier": 2, "unlockRequirement": 150},
+                {"level": 8, "price": 3000000000000, "multiplier": 2, "unlockRequirement": 200},
+                {"level": 9, "price": 30000000000000, "multiplier": 2, "unlockRequirement": 250},
+                {"level": 10, "price": 300000000000000, "multiplier": 2, "unlockRequirement": 300}
+            ]
+        },
+        {
+            "id": "factory_upgrade",
+            "name": "Industrial Revolution",
+            "baseUpgradeId": "factory",
+            "description": "Button Factories are twice as efficient",
+            "icon": "🏭",
+            "levels": [
+                {"level": 1, "price": 6500000, "multiplier": 2, "unlockRequirement": 1},
+                {"level": 2, "price": 32500000, "multiplier": 2, "unlockRequirement": 5},
+                {"level": 3, "price": 325000000, "multiplier": 2, "unlockRequirement": 10},
+                {"level": 4, "price": 3250000000, "multiplier": 2, "unlockRequirement": 25},
+                {"level": 5, "price": 32500000000, "multiplier": 2, "unlockRequirement": 50},
+                {"level": 6, "price": 325000000000, "multiplier": 2, "unlockRequirement": 100},
+                {"level": 7, "price": 3250000000000, "multiplier": 2, "unlockRequirement": 150},
+                {"level": 8, "price": 32500000000000, "multiplier": 2, "unlockRequirement": 200},
+                {"level": 9, "price": 325000000000000, "multiplier": 2, "unlockRequirement": 250},
+                {"level": 10, "price": 3250000000000000, "multiplier": 2, "unlockRequirement": 300}
+            ]
+        },
+        {
+            "id": "bank_upgrade",
+            "name": "Interest Boost",
+            "baseUpgradeId": "bank",
+            "description": "Button Banks are twice as efficient",
+            "icon": "🏦",
+            "levels": [
+                {"level": 1, "price": 70000000, "multiplier": 2, "unlockRequirement": 1},
+                {"level": 2, "price": 350000000, "multiplier": 2, "unlockRequirement": 5},
+                {"level": 3, "price": 3500000000, "multiplier": 2, "unlockRequirement": 10},
+                {"level": 4, "price": 35000000000, "multiplier": 2, "unlockRequirement": 25},
+                {"level": 5, "price": 350000000000, "multiplier": 2, "unlockRequirement": 50},
+                {"level": 6, "price": 3500000000000, "multiplier": 2, "unlockRequirement": 100},
+                {"level": 7, "price": 35000000000000, "multiplier": 2, "unlockRequirement": 150},
+                {"level": 8, "price": 350000000000000, "multiplier": 2, "unlockRequirement": 200},
+                {"level": 9, "price": 3500000000000000, "multiplier": 2, "unlockRequirement": 250},
+                {"level": 10, "price": 35000000000000000, "multiplier": 2, "unlockRequirement": 300}
+            ]
+        },
+        {
+            "id": "temple_upgrade",
+            "name": "Divine Blessing",
+            "baseUpgradeId": "temple",
+            "description": "Button Temples are twice as efficient",
+            "icon": "⛩️",
+            "levels": [
+                {"level": 1, "price": 1000000000, "multiplier": 2, "unlockRequirement": 1},
+                {"level": 2, "price": 5000000000, "multiplier": 2, "unlockRequirement": 5},
+                {"level": 3, "price": 50000000000, "multiplier": 2, "unlockRequirement": 10},
+                {"level": 4, "price": 500000000000, "multiplier": 2, "unlockRequirement": 25},
+                {"level": 5, "price": 5000000000000, "multiplier": 2, "unlockRequirement": 50},
+                {"level": 6, "price": 50000000000000, "multiplier": 2, "unlockRequirement": 100},
+                {"level": 7, "price": 500000000000000, "multiplier": 2, "unlockRequirement": 150},
+                {"level": 8, "price": 5000000000000000, "multiplier": 2, "unlockRequirement": 200},
+                {"level": 9, "price": 50000000000000000, "multiplier": 2, "unlockRequirement": 250},
+                {"level": 10, "price": 500000000000000000, "multiplier": 2, "unlockRequirement": 300}
+            ]
+        },
+        {
+            "id": "wizard_upgrade",
+            "name": "Magic Amplifier",
+            "baseUpgradeId": "wizard",
+            "description": "Button Wizards are twice as efficient",
+            "icon": "🧙",
+            "levels": [
+                {"level": 1, "price": 16500000000, "multiplier": 2, "unlockRequirement": 1},
+                {"level": 2, "price": 82500000000, "multiplier": 2, "unlockRequirement": 5},
+                {"level": 3, "price": 825000000000, "multiplier": 2, "unlockRequirement": 10},
+                {"level": 4, "price": 8250000000000, "multiplier": 2, "unlockRequirement": 25},
+                {"level": 5, "price": 82500000000000, "multiplier": 2, "unlockRequirement": 50},
+                {"level": 6, "price": 825000000000000, "multiplier": 2, "unlockRequirement": 100},
+                {"level": 7, "price": 8250000000000000, "multiplier": 2, "unlockRequirement": 150},
+                {"level": 8, "price": 82500000000000000, "multiplier": 2, "unlockRequirement": 200},
+                {"level": 9, "price": 825000000000000000, "multiplier": 2, "unlockRequirement": 250},
+                {"level": 10, "price": 8250000000000000000, "multiplier": 2, "unlockRequirement": 300}
+            ]
+        },
+        {
+            "id": "spaceship_upgrade",
+            "name": "Warp Drive",
+            "baseUpgradeId": "spaceship",
+            "description": "Button Spaceships are twice as efficient",
+            "icon": "🚀",
+            "levels": [
+                {"level": 1, "price": 255000000000, "multiplier": 2, "unlockRequirement": 1},
+                {"level": 2, "price": 1275000000000, "multiplier": 2, "unlockRequirement": 5},
+                {"level": 3, "price": 12750000000000, "multiplier": 2, "unlockRequirement": 10},
+                {"level": 4, "price": 127500000000000, "multiplier": 2, "unlockRequirement": 25},
+                {"level": 5, "price": 1275000000000000, "multiplier": 2, "unlockRequirement": 50},
+                {"level": 6, "price": 12750000000000000, "multiplier": 2, "unlockRequirement": 100},
+                {"level": 7, "price": 127500000000000000, "multiplier": 2, "unlockRequirement": 150},
+                {"level": 8, "price": 1275000000000000000, "multiplier": 2, "unlockRequirement": 200},
+                {"level": 9, "price": 12750000000000000000, "multiplier": 2, "unlockRequirement": 250},
+                {"level": 10, "price": 127500000000000000000, "multiplier": 2, "unlockRequirement": 300}
+            ]
+        },
+        {
+            "id": "manual_click_upgrade",
+            "name": "Clicking Power",
+            "baseUpgradeId": "manual",
+            "description": "Each manual click gives more buttons",
+            "icon": "👆",
+            "levels": [
+                {"level": 1, "price": 100, "multiplier": 2, "unlockRequirement": 0},
+                {"level": 2, "price": 500, "multiplier": 2, "unlockRequirement": 0},
+                {"level": 3, "price": 5000, "multiplier": 2, "unlockRequirement": 0},
+                {"level": 4, "price": 50000, "multiplier": 2, "unlockRequirement": 0},
+                {"level": 5, "price": 500000, "multiplier": 2, "unlockRequirement": 0},
+                {"level": 6, "price": 5000000, "multiplier": 2, "unlockRequirement": 0},
+                {"level": 7, "price": 50000000, "multiplier": 2, "unlockRequirement": 0},
+                {"level": 8, "price": 500000000, "multiplier": 2, "unlockRequirement": 0},
+                {"level": 9, "price": 5000000000, "multiplier": 2, "unlockRequirement": 0},
+                {"level": 10, "price": 50000000000, "multiplier": 2, "unlockRequirement": 0}
+            ]
+        },
+        {
+            "id": "global_production_upgrade",
+            "name": "Synergy Matrix",
+            "baseUpgradeId": "global",
+            "description": "All production buildings gain a boost",
+            "icon": "⚡",
+            "levels": [
+                {"level": 1, "price": 100000, "multiplier": 1.5, "unlockRequirement": 0},
+                {"level": 2, "price": 1000000, "multiplier": 1.5, "unlockRequirement": 0},
+                {"level": 3, "price": 10000000, "multiplier": 1.5, "unlockRequirement": 0},
+                {"level": 4, "price": 100000000, "multiplier": 1.5, "unlockRequirement": 0},
+                {"level": 5, "price": 1000000000, "multiplier": 1.5, "unlockRequirement": 0},
+                {"level": 6, "price": 10000000000, "multiplier": 1.5, "unlockRequirement": 0},
+                {"level": 7, "price": 100000000000, "multiplier": 1.5, "unlockRequirement": 0},
+                {"level": 8, "price": 1000000000000, "multiplier": 1.5, "unlockRequirement": 0},
+                {"level": 9, "price": 10000000000000, "multiplier": 1.5, "unlockRequirement": 0},
+                {"level": 10, "price": 100000000000000, "multiplier": 2, "unlockRequirement": 0}
+            ]
         }
     ]
 }

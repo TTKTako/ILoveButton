@@ -1,7 +1,7 @@
 "use client";
 
-import { Upgrade, UpgradeState } from '@/types/game';
-import { calculateUpgradePrice, formatNumber } from '@/utils/gameStorage';
+import { Upgrade, UpgradeState, SingleUpgrade, SingleUpgradeState } from '@/types/game';
+import { calculateUpgradePrice, formatNumber, getUpgradeMultiplier } from '@/utils/gameStorage';
 
 interface UpgradeShopProps {
   isOpen: boolean;
@@ -11,6 +11,8 @@ interface UpgradeShopProps {
   score: number;
   onPurchase: (upgradeId: string) => void;
   totalCPS: number;
+  singleUpgrades: SingleUpgradeState;
+  singleUpgradeData: SingleUpgrade[];
 }
 
 export default function UpgradeShop({
@@ -21,6 +23,8 @@ export default function UpgradeShop({
   score,
   onPurchase,
   totalCPS,
+  singleUpgrades,
+  singleUpgradeData,
 }: UpgradeShopProps) {
   if (!isOpen) return null;
 
@@ -49,7 +53,9 @@ export default function UpgradeShop({
             const count = upgradeState[upgrade.id] || 0;
             const price = calculateUpgradePrice(upgrade.base_price, count);
             const canAfford = score >= price;
-            const production = upgrade.base_cps * count;
+            const multiplier = getUpgradeMultiplier(upgrade.id, singleUpgrades, singleUpgradeData);
+            const effectiveCPS = upgrade.base_cps * multiplier;
+            const production = effectiveCPS * count;
 
             return (
               <div
@@ -76,7 +82,10 @@ export default function UpgradeShop({
                     </p>
                     <div className="flex gap-4 mt-1 text-xs text-gray-700">
                       <span>
-                        Each: <strong>{formatNumber(upgrade.base_cps)}/s</strong>
+                        Each: <strong>{formatNumber(effectiveCPS)}/s</strong>
+                        {multiplier > 1 && (
+                          <span className="ml-1 text-purple-600">(×{multiplier.toFixed(1)})</span>
+                        )}
                       </span>
                       {count > 0 && (
                         <span>
