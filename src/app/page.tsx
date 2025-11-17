@@ -36,6 +36,8 @@ export default function Home() {
   const [showEndgameVideo, setShowEndgameVideo] = useState(false);
   const [showEndgameChoice, setShowEndgameChoice] = useState(false);
   const [isGalaxyMode, setIsGalaxyMode] = useState(false);
+  const [showEndgameDialogs, setShowEndgameDialogs] = useState(false);
+  const [currentDialogIndex, setCurrentDialogIndex] = useState(0);
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
   const [adPosition, setAdPosition] = useState<{ x: number; y: number } | null>(null);
   const [fallingClicks, setFallingClicks] = useState<Array<{ id: number; x: number; y: number }>>([]);
@@ -388,7 +390,8 @@ export default function Home() {
 
     // Check if this is the endgame upgrade
     if (upgradeId === 'endgame_upgrade') {
-      setShowEndgameVideo(true);
+      setShowEndgameDialogs(true);
+      setCurrentDialogIndex(0);
     }
   };
 
@@ -420,6 +423,8 @@ export default function Home() {
     setShowEndgameVideo(false);
     setShowEndgameChoice(false);
     setIsGalaxyMode(false);
+    setShowEndgameDialogs(false);
+    setCurrentDialogIndex(0);
     resetGameState();
     localStorage.removeItem('hasVisitedBefore');
     setShowWelcomePopup(true);
@@ -427,6 +432,8 @@ export default function Home() {
 
   const handleContinuePlaying = () => {
     setShowEndgameChoice(false);
+    setShowEndgameDialogs(false);
+    setCurrentDialogIndex(0);
     setIsGalaxyMode(true);
   };
 
@@ -444,19 +451,77 @@ export default function Home() {
         </video>
       )}
 
-      {/* Endgame Video */}
-      {showEndgameVideo && !showEndgameChoice && (
+      {/* Endgame Blackhole Background with Dialogs */}
+      {showEndgameDialogs && !showEndgameChoice && (
         <div className="fixed inset-0 z-[9999] bg-black flex items-center justify-center">
           <video
             autoPlay
-            onEnded={() => {
-              setShowEndgameVideo(false);
-              setShowEndgameChoice(true);
-            }}
-            className="w-full h-full object-contain"
+            loop
+            muted
+            className="fixed inset-0 w-full h-full object-cover z-0"
           >
-            <source src="/endgame.mp4" type="video/mp4" />
+            <source src="/blackhole.mp4" type="video/mp4" />
           </video>
+          
+          {/* Dialog Overlay */}
+          <div className="relative z-10 flex items-center justify-center w-full h-full p-4">
+            <div className="bg-black/70 backdrop-blur-md rounded-2xl shadow-2xl p-6 sm:p-8 max-w-2xl w-full text-center border-2 border-purple-500">
+              <div className="text-white space-y-4">
+                {currentDialogIndex === 0 && (
+                  <>
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-purple-300 mb-4">🌌 Congratulations! 🌌</h2>
+                    <p className="text-base sm:text-lg md:text-xl leading-relaxed">
+                      You've done it! You've clicked your way to the ultimate achievement!
+                    </p>
+                  </>
+                )}
+                {currentDialogIndex === 1 && (
+                  <>
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-blue-300 mb-4">✨ The Journey ✨</h2>
+                    <p className="text-base sm:text-lg md:text-xl leading-relaxed">
+                      From a simple button to mastering the universe itself...
+                      Your determination has been extraordinary!
+                    </p>
+                  </>
+                )}
+                {currentDialogIndex === 2 && (
+                  <>
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-green-300 mb-4">🎮 Victory! 🎮</h2>
+                    <p className="text-base sm:text-lg md:text-xl leading-relaxed">
+                      You are now the supreme Clicker of the Galaxy!
+                      The cosmos bends to your clicking prowess!
+                    </p>
+                  </>
+                )}
+                {currentDialogIndex === 3 && (
+                  <>
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-yellow-300 mb-4">🎉 Thank You! 🎉</h2>
+                    <p className="text-base sm:text-lg md:text-xl leading-relaxed mb-6">
+                      Thank you for playing this game to the end!
+                      Your dedication means everything!
+                    </p>
+                    <p className="text-lg sm:text-xl md:text-2xl font-bold text-pink-400">
+                      Game by: TTKTako (TarKubz)
+                    </p>
+                  </>
+                )}
+              </div>
+              
+              <button
+                onClick={() => {
+                  if (currentDialogIndex < 3) {
+                    setCurrentDialogIndex(currentDialogIndex + 1);
+                  } else {
+                    setShowEndgameDialogs(false);
+                    setShowEndgameChoice(true);
+                  }
+                }}
+                className="mt-6 px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold rounded-lg text-base sm:text-lg md:text-xl transition-all hover:scale-105 shadow-lg"
+              >
+                {currentDialogIndex < 3 ? 'Continue ➜' : 'What\'s Next? ➜'}
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -541,7 +606,7 @@ export default function Home() {
         </div>
       )}
 
-      {!showEndgameVideo && (
+      {!showEndgameVideo && !showEndgameDialogs && (
         <>
       <div className="mb-4 text-4xl font-bold text-black absolute top-4 flex flex-col gap-2 align-center justify-center text-center w-max z-50 px-2 sm:px-0">
         <h1 className="font-bold text-black text-xl sm:text-2xl md:text-3xl">{formatNumber(score)} Click(s)</h1>

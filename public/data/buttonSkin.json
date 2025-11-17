@@ -7,6 +7,24 @@
             "price": 0
         },
         {
+            "id": "pinkbutton",
+            "name": "All Pink",
+            "value": "pinkbutton",
+            "price": 100
+        },
+        {
+            "id": "yellowbutton",
+            "name": "All Yellow",
+            "value": "yellowbutton",
+            "price": 400
+        },
+        {
+            "id": "blackbutton",
+            "name": "All Black",
+            "value": "blackbutton",
+            "price": 800
+        },
+        {
             "id": "AmongUs",
             "name": "Among Us Skin",
             "value": "among_us",
@@ -17,6 +35,30 @@
             "name": "Popcat Skin",
             "value": "popcat",
             "price": 10000
+        },
+        {
+            "id": "trollface",
+            "name": "Troll Face Skin",
+            "value": "trollface",
+            "price": 30000
+        },
+        {
+            "id": "doge",
+            "name": "Doge Skin",
+            "value": "doge",
+            "price": 80000
+        },
+        {
+            "id": "oof",
+            "name": "Roblox Noob Skin",
+            "value": "oof",
+            "price": 100000
+        },
+        {
+            "id": "lever",
+            "name": "Minecraft Lever Skin",
+            "value": "lever",
+            "price": 500000
         },
         {
             "id": "cookie",
