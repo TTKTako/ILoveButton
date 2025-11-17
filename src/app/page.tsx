@@ -83,6 +83,8 @@ export default function Home() {
 
   // Auto-click from upgrades (CPS)
   useEffect(() => {
+    if (upgradeData.length === 0) return; // Wait for upgrade data to load
+    
     const totalCPS = calculateTotalCPS(upgrades, upgradeData);
     
     if (totalCPS > 0) {
@@ -179,6 +181,18 @@ export default function Home() {
 
   const totalCPS = calculateTotalCPS(upgrades, upgradeData);
 
+  // Check if any upgrade is affordable
+  const canAffordAnyUpgrade = upgradeData.some((upgrade) => {
+    const currentCount = upgrades[upgrade.id] || 0;
+    const price = calculateUpgradePrice(upgrade.base_price, currentCount);
+    return score >= price;
+  });
+
+  // Check if any skin is affordable
+  const canAffordAnySkin = skinData.some((skin) => {
+    return !purchasedSkins.includes(skin.id) && score >= skin.price;
+  });
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-white flex-col">
       <div className="mb-4 text-4xl font-bold text-black absolute top-4 flex flex-col gap-2 align-center justify-center text-center w-max">
@@ -187,20 +201,26 @@ export default function Home() {
           Total: {formatNumber(totalCPS + clicksPerSec)} clicks/sec
         </h1>
         <div className="text-sm text-gray-600">
-          Manual: {clicksPerSec}/s | Auto: {formatNumber(totalCPS)}/s
+          Manual: {clicksPerSec.toFixed(2)}/s | Auto: {formatNumber(totalCPS)}/s
         </div>
         <div className="flex flex-row gap-2 text-lg justify-center">
           <button
             onClick={() => setIsUpgradeShopOpen(true)}
-            className="shadow-lg px-4 py-1 border rounded text-black text-center bg-blue-100 hover:bg-blue-200 cursor-pointer"
+            className="shadow-lg px-4 py-1 border rounded text-black text-center bg-blue-100 hover:bg-blue-200 cursor-pointer relative"
           >
             Upgrade
+            {canAffordAnyUpgrade && (
+              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
+            )}
           </button>
           <button
             onClick={() => setIsSkinShopOpen(true)}
-            className="shadow-lg px-4 py-1 border rounded text-black text-center bg-yellow-100 hover:bg-yellow-200 cursor-pointer"
+            className="shadow-lg px-4 py-1 border rounded text-black text-center bg-yellow-100 hover:bg-yellow-200 cursor-pointer relative"
           >
             Skin
+            {canAffordAnySkin && (
+              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
+            )}
           </button>
         </div>
       </div>
