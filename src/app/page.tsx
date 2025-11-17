@@ -2,40 +2,114 @@
 
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
+import UpgradeShop from "@/components/UpgradeShop";
+import SkinShop from "@/components/SkinShop";
+import { Upgrade, ButtonSkin, GameState, UpgradeState } from "@/types/game";
+import {
+  loadGameState,
+  saveGameState,
+  resetGameState,
+  calculateUpgradePrice,
+  calculateTotalCPS,
+  safeAdd,
+  safeSubtract,
+  formatNumber,
+} from "@/utils/gameStorage";
 
 export default function Home() {
   const [score, setScore] = useState(0);
   const [isPressed, setIsPressed] = useState(false);
   const [clicksPerSec, setClicksPerSec] = useState(0);
   const [buttonSkin, setButtonSkin] = useState("default");
+  const [upgrades, setUpgrades] = useState<UpgradeState>({});
+  const [purchasedSkins, setPurchasedSkins] = useState<string[]>(["default"]);
+  
+  const [upgradeData, setUpgradeData] = useState<Upgrade[]>([]);
+  const [skinData, setSkinData] = useState<ButtonSkin[]>([]);
+  
+  const [isUpgradeShopOpen, setIsUpgradeShopOpen] = useState(false);
+  const [isSkinShopOpen, setIsSkinShopOpen] = useState(false);
+  
   const clickTimestamps = useRef<number[]>([]);
+  const hasLoadedData = useRef(false);
 
-  // Load data from localStorage on mount
+  // Load game data from JSON files
   useEffect(() => {
-    const savedScore = localStorage.getItem('clickScore');
-    const savedSkin = localStorage.getItem('buttonSkin');
+    const loadData = async () => {
+      try {
+        const [upgradeRes, skinRes] = await Promise.all([
+          fetch("/data/upgrade.json"),
+          fetch("/data/buttonSkin.json"),
+        ]);
+        
+        const upgradeJson = await upgradeRes.json();
+        const skinJson = await skinRes.json();
+        
+        setUpgradeData(upgradeJson.upgrades || []);
+        setSkinData(skinJson.ButtonSkins || []);
+      } catch (error) {
+        console.error("Failed to load game data:", error);
+      }
+    };
     
-    if (savedScore !== null) {
-      setScore(parseInt(savedScore, 10));
-    }
-    
-    if (savedSkin !== null) {
-      setButtonSkin(savedSkin);
-    }
+    loadData();
   }, []);
 
-  // Save score to localStorage whenever it changes
+  // Load game state from localStorage on mount
   useEffect(() => {
-    localStorage.setItem('clickScore', score.toString());
-  }, [score]);
+    if (hasLoadedData.current) return;
+    hasLoadedData.current = true;
+    
+    const gameState = loadGameState();
+    setScore(gameState.score);
+    setUpgrades(gameState.upgrades);
+    setPurchasedSkins(gameState.purchasedSkins);
+    setButtonSkin(gameState.equippedSkin);
+  }, []);
 
-  // Save skin to localStorage whenever it changes
+  // Save game state whenever it changes
   useEffect(() => {
-    localStorage.setItem('buttonSkin', buttonSkin);
-  }, [buttonSkin]);
+    if (!hasLoadedData.current) return;
+    
+    const gameState: GameState = {
+      score,
+      upgrades,
+      purchasedSkins,
+      equippedSkin: buttonSkin,
+    };
+    
+    saveGameState(gameState);
+  }, [score, upgrades, purchasedSkins, buttonSkin]);
+
+  // Auto-click from upgrades (CPS)
+  useEffect(() => {
+    const totalCPS = calculateTotalCPS(upgrades, upgradeData);
+    
+    if (totalCPS > 0) {
+      const interval = setInterval(() => {
+        setScore((prevScore) => safeAdd(prevScore, totalCPS / 10)); // Update 10 times per second
+      }, 100);
+      
+      return () => clearInterval(interval);
+    }
+  }, [upgrades, upgradeData]);
+
+  // Calculate manual clicks per second
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = Date.now();
+      const recentClicks = clickTimestamps.current.filter(
+        timestamp => now - timestamp <= 1000
+      );
+      clickTimestamps.current = recentClicks;
+      setClicksPerSec(recentClicks.length);
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleClick = () => {
-    setScore(score + 1);
+    setScore((prevScore) => safeAdd(prevScore, 1));
     setIsPressed(true);
     setTimeout(() => setIsPressed(false), 150);
     
@@ -53,29 +127,84 @@ export default function Home() {
     );
   };
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const now = Date.now();
-      const recentClicks = clickTimestamps.current.filter(
-        timestamp => now - timestamp <= 1000
-      );
-      clickTimestamps.current = recentClicks;
-      setClicksPerSec(recentClicks.length);
-    }, 100);
+  const handlePurchaseUpgrade = (upgradeId: string) => {
+    const upgrade = upgradeData.find((u) => u.id === upgradeId);
+    if (!upgrade) return;
+    
+    const currentCount = upgrades[upgradeId] || 0;
+    const price = calculateUpgradePrice(upgrade.base_price, currentCount);
+    
+    if (score >= price) {
+      setScore((prevScore) => safeSubtract(prevScore, price));
+      setUpgrades((prev) => ({
+        ...prev,
+        [upgradeId]: currentCount + 1,
+      }));
+    }
+  };
 
-    return () => clearInterval(interval);
-  }, []);
+  const handlePurchaseSkin = (skinId: string) => {
+    const skin = skinData.find((s) => s.id === skinId);
+    if (!skin) return;
+    
+    if (score >= skin.price && !purchasedSkins.includes(skinId)) {
+      setScore((prevScore) => safeSubtract(prevScore, skin.price));
+      setPurchasedSkins((prev) => [...prev, skinId]);
+      
+      // Auto-equip after purchase
+      setButtonSkin(skin.value);
+    }
+  };
+
+  const handleEquipSkin = (skinId: string) => {
+    const skin = skinData.find((s) => s.id === skinId);
+    if (!skin) return;
+    
+    if (purchasedSkins.includes(skinId)) {
+      setButtonSkin(skin.value);
+    }
+  };
+
+  const handleReset = () => {
+    if (confirm("Are you sure you want to reset all progress? This cannot be undone!")) {
+      setScore(0);
+      setUpgrades({});
+      setPurchasedSkins(["default"]);
+      setButtonSkin("default");
+      clickTimestamps.current = [];
+      setClicksPerSec(0);
+      resetGameState();
+    }
+  };
+
+  const totalCPS = calculateTotalCPS(upgrades, upgradeData);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-white flex-col">
       <div className="mb-4 text-4xl font-bold text-black absolute top-4 flex flex-col gap-2 align-center justify-center text-center w-max">
-        <h1 className="font-bold text-black text-3xl">{score} Click(s)</h1>
-        <h1 className="font-semibold text-black text-lg">earn {clicksPerSec} clicks/sec</h1>
+        <h1 className="font-bold text-black text-3xl">{formatNumber(score)} Click(s)</h1>
+        <h1 className="font-semibold text-black text-lg">
+          Total: {formatNumber(totalCPS + clicksPerSec)} clicks/sec
+        </h1>
+        <div className="text-sm text-gray-600">
+          Manual: {clicksPerSec}/s | Auto: {formatNumber(totalCPS)}/s
+        </div>
         <div className="flex flex-row gap-2 text-lg justify-center">
-          <button className="shadow-lg px-4 py-1 border rounded text-black text-center bg-blue-100 hover:bg-blue-200 cursor-pointer">Upgrade</button>
-          <button className="shadow-lg px-4 py-1 border rounded text-black text-center bg-yellow-100 hover:bg-yellow-200 cursor-pointer">Skin</button>
+          <button
+            onClick={() => setIsUpgradeShopOpen(true)}
+            className="shadow-lg px-4 py-1 border rounded text-black text-center bg-blue-100 hover:bg-blue-200 cursor-pointer"
+          >
+            Upgrade
+          </button>
+          <button
+            onClick={() => setIsSkinShopOpen(true)}
+            className="shadow-lg px-4 py-1 border rounded text-black text-center bg-yellow-100 hover:bg-yellow-200 cursor-pointer"
+          >
+            Skin
+          </button>
         </div>
       </div>
+      
       <div className="text-center h-2/3 flex flex-col justify-center">
         <Image
           src={`/button/${buttonSkin}/${isPressed ? 'press' : 'unpress'}.png`}
@@ -86,19 +215,36 @@ export default function Home() {
           onClick={handleClick}
         />
       </div>
+      
       <p
         className="absolute bottom-3 right-4 text-sm text-gray-500 hover:underline hover:text-red-500 cursor-pointer"
-        onClick={() => {
-          setScore(0);
-          setButtonSkin("default");
-          clickTimestamps.current = [];
-          setClicksPerSec(0);
-          localStorage.removeItem('clickScore');
-          localStorage.removeItem('buttonSkin');
-        }}
-        >
+        onClick={handleReset}
+      >
         reset data...
       </p>
+
+      {/* Upgrade Shop Modal */}
+      <UpgradeShop
+        isOpen={isUpgradeShopOpen}
+        onClose={() => setIsUpgradeShopOpen(false)}
+        upgrades={upgradeData}
+        upgradeState={upgrades}
+        score={score}
+        onPurchase={handlePurchaseUpgrade}
+        totalCPS={totalCPS}
+      />
+
+      {/* Skin Shop Modal */}
+      <SkinShop
+        isOpen={isSkinShopOpen}
+        onClose={() => setIsSkinShopOpen(false)}
+        skins={skinData}
+        purchasedSkins={purchasedSkins}
+        equippedSkin={buttonSkin}
+        score={score}
+        onPurchase={handlePurchaseSkin}
+        onEquip={handleEquipSkin}
+      />
     </div>
   );
 }

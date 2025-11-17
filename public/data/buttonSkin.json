@@ -1,0 +1,16 @@
+{
+    "ButtonSkins": [
+        {
+            "id": "default",
+            "name": "Default Skin",
+            "value": "default",
+            "price": 0
+        },
+        {
+            "id": "AmongUs",
+            "name": "Among Us Skin",
+            "value": "among_us",
+            "price": 5000
+        }
+    ]
+}

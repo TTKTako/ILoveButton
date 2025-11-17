@@ -1,0 +1,76 @@
+{
+    "upgrades": [
+        {
+            "id": "cursor",
+            "name": "Auto Clicker",
+            "description": "Automatically clicks the button for you",
+            "base_price": 15,
+            "base_cps": 0.1,
+            "icon": "🖱️"
+        },
+        {
+            "id": "grandma",
+            "name": "Button Grandma",
+            "description": "A nice grandma to click buttons",
+            "base_price": 100,
+            "base_cps": 1,
+            "icon": "👵"
+        },
+        {
+            "id": "farm",
+            "name": "Button Farm",
+            "description": "Grows buttons from the ground",
+            "base_price": 1100,
+            "base_cps": 8,
+            "icon": "🚜"
+        },
+        {
+            "id": "mine",
+            "name": "Button Mine",
+            "description": "Mines buttons from the depths",
+            "base_price": 12000,
+            "base_cps": 47,
+            "icon": "⛏️"
+        },
+        {
+            "id": "factory",
+            "name": "Button Factory",
+            "description": "Produces buttons en masse",
+            "base_price": 130000,
+            "base_cps": 260,
+            "icon": "🏭"
+        },
+        {
+            "id": "bank",
+            "name": "Button Bank",
+            "description": "Generates interest in buttons",
+            "base_price": 1400000,
+            "base_cps": 1400,
+            "icon": "🏦"
+        },
+        {
+            "id": "temple",
+            "name": "Button Temple",
+            "description": "Summons buttons from the heavens",
+            "base_price": 20000000,
+            "base_cps": 7800,
+            "icon": "⛩️"
+        },
+        {
+            "id": "wizard",
+            "name": "Button Wizard",
+            "description": "Conjures buttons from thin air",
+            "base_price": 330000000,
+            "base_cps": 44000,
+            "icon": "🧙"
+        },
+        {
+            "id": "spaceship",
+            "name": "Button Spaceship",
+            "description": "Harvests buttons from other planets",
+            "base_price": 5100000000,
+            "base_cps": 260000,
+            "icon": "🚀"
+        }
+    ]
+}
