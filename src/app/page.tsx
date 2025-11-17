@@ -36,6 +36,7 @@ export default function Home() {
   const [showEndgameVideo, setShowEndgameVideo] = useState(false);
   const [showEndgameChoice, setShowEndgameChoice] = useState(false);
   const [isGalaxyMode, setIsGalaxyMode] = useState(false);
+  const [showWelcomePopup, setShowWelcomePopup] = useState(false);
   const [adPosition, setAdPosition] = useState<{ x: number; y: number } | null>(null);
   const [fallingClicks, setFallingClicks] = useState<Array<{ id: number; x: number; y: number }>>([]);
   const [floatingMemes, setFloatingMemes] = useState<Array<{ 
@@ -86,6 +87,13 @@ export default function Home() {
     setPurchasedSkins(gameState.purchasedSkins);
     setButtonSkin(gameState.equippedSkin);
     setSingleUpgrades(gameState.singleUpgrades || {});
+    
+    // Check if first time visitor
+    const hasVisited = localStorage.getItem('hasVisitedBefore');
+    if (!hasVisited) {
+      setShowWelcomePopup(true);
+      localStorage.setItem('hasVisitedBefore', 'true');
+    }
   }, []);
 
   // Save game state whenever it changes
@@ -302,6 +310,8 @@ export default function Home() {
       clickTimestamps.current = [];
       setClicksPerSec(0);
       resetGameState();
+      localStorage.removeItem('hasVisitedBefore');
+      setShowWelcomePopup(true);
     }
   };
 
@@ -373,6 +383,8 @@ export default function Home() {
     setShowEndgameChoice(false);
     setIsGalaxyMode(false);
     resetGameState();
+    localStorage.removeItem('hasVisitedBefore');
+    setShowWelcomePopup(true);
   };
 
   const handleContinuePlaying = () => {
@@ -432,6 +444,61 @@ export default function Home() {
                 🌠 Continue in Galaxy Mode
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Welcome Popup for First Time Visitors */}
+      {showWelcomePopup && (
+        <div className="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-lg flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-2xl w-full">
+            <h1 className="text-4xl font-bold text-center text-purple-600 mb-6">
+              🎮 Welcome to I Love Button! 🎮
+            </h1>
+            
+            <div className="space-y-4 text-left mb-6">
+              <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+                <h3 className="font-bold text-blue-900 mb-2">👨‍💻 Creator:</h3>
+                <p className="text-sm text-gray-700">
+                  <strong>TTKTako</strong><br/>
+                  <a href="https://github.com/TTKTako" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                    GitHub: github.com/TTKTako
+                  </a><br/>
+                  <a href="https://buymeacoffee.com/ttktako" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                    ☕ Buy me a coffee: buymeacoffee.com/ttktako
+                  </a>
+                </p>
+              </div>
+
+              <div className="bg-green-50 p-4 rounded-lg border-l-4 border-green-500">
+                <h3 className="font-bold text-green-900 mb-2">💾 Data Save:</h3>
+                <p className="text-sm text-gray-700">
+                  Your data will be saved <strong>locally</strong> on your browser. If you change devices or clear your browser data, your progress will not be migrated.
+                </p>
+              </div>
+
+              <div className="bg-orange-50 p-4 rounded-lg border-l-4 border-orange-500">
+                <h3 className="font-bold text-orange-900 mb-2">⏱️ Estimated Playtime:</h3>
+                <p className="text-sm text-gray-700">
+                  <strong>10-20 hours</strong> of engaging clicker gameplay with multiple upgrade paths and an endgame goal!
+                </p>
+              </div>
+
+              <div className="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-500">
+                <h3 className="font-bold text-purple-900 mb-2">📝 Description:</h3>
+                <p className="text-sm text-gray-700">
+                  This game is made for <strong>fun</strong>, not for selling purposes. I hope you enjoy it! 
+                  Click the button, buy upgrades, and work your way to becoming the Clicker of the Galaxy! 🌌
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowWelcomePopup(false)}
+              className="w-full px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold rounded-lg text-xl transition-all hover:scale-105 shadow-lg"
+            >
+              🚀 Start Clicking!
+            </button>
           </div>
         </div>
       )}
