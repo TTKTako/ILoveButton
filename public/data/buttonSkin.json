@@ -65,6 +65,18 @@
             "name": "Respect The Original Cookie",
             "value": "cookie",
             "price": 1000000
+        },
+        {
+            "id": "lightning",
+            "name": "unreasonable price button",
+            "value": "lightning",
+            "price": 100000000
+        },
+        {
+            "id": "nya",
+            "name": "Random Box >~<",
+            "value": "nya",
+            "price": 999999999999
         }
     ]
 }
