@@ -1,21 +1,27 @@
 import { GameState, UpgradeState, SingleUpgrade, SingleUpgradeState } from '@/types/game';
+import Decimal from 'break_infinity.js';
 
 const GAME_STATE_KEY = 'buttonClickerGameState';
-const MAX_SAFE_NUMBER = 2000000000; // 2 billion to prevent overflow
+
+// Helper to convert to Decimal
+export const D = (value: number | string | Decimal): Decimal => {
+  return new Decimal(value);
+};
 
 export const safeAdd = (a: number, b: number): number => {
-  const result = a + b;
-  return Math.min(result, MAX_SAFE_NUMBER);
+  const result = D(a).add(b);
+  return result.toNumber();
 };
 
 export const safeSubtract = (a: number, b: number): number => {
-  return Math.max(0, a - b);
+  const result = D(a).sub(b);
+  return Math.max(0, result.toNumber());
 };
 
 export const calculateUpgradePrice = (basePrice: number, count: number): number => {
   // Cookie Clicker formula: basePrice * (1.15 ^ count)
-  const price = Math.floor(basePrice * Math.pow(1.15, count));
-  return Math.min(price, MAX_SAFE_NUMBER);
+  const price = D(basePrice).times(D(1.15).pow(count));
+  return price.floor().toNumber();
 };
 
 export const calculateTotalCPS = (
@@ -24,28 +30,28 @@ export const calculateTotalCPS = (
   singleUpgrades?: SingleUpgradeState,
   singleUpgradeData?: SingleUpgrade[]
 ): number => {
-  let totalCPS = 0;
+  let totalCPS = D(0);
   
   upgradeData.forEach((upgrade) => {
     const count = upgrades[upgrade.id] || 0;
-    let baseCPS = upgrade.base_cps * count;
+    let baseCPS = D(upgrade.base_cps).times(count);
     
     // Apply single upgrade multipliers for this specific upgrade
     if (singleUpgrades && singleUpgradeData) {
       const multiplier = getUpgradeMultiplier(upgrade.id, singleUpgrades, singleUpgradeData);
-      baseCPS *= multiplier;
+      baseCPS = baseCPS.times(multiplier);
     }
     
-    totalCPS += baseCPS;
+    totalCPS = totalCPS.add(baseCPS);
   });
   
   // Apply global multiplier
   if (singleUpgrades && singleUpgradeData) {
     const globalMultiplier = getUpgradeMultiplier('global', singleUpgrades, singleUpgradeData);
-    totalCPS *= globalMultiplier;
+    totalCPS = totalCPS.times(globalMultiplier);
   }
   
-  return Math.min(totalCPS, MAX_SAFE_NUMBER);
+  return totalCPS.toNumber();
 };
 
 export const getUpgradeMultiplier = (
@@ -91,9 +97,9 @@ export const getDefaultGameState = (): GameState => ({
 
 export const saveGameState = (state: GameState): void => {
   try {
-    // Ensure all numbers are safe before saving
+    // Numbers are stored as-is, break_infinity handles large numbers
     const safeState: GameState = {
-      score: Math.min(state.score, MAX_SAFE_NUMBER),
+      score: state.score,
       upgrades: { ...state.upgrades },
       purchasedSkins: [...state.purchasedSkins],
       equippedSkin: state.equippedSkin,
@@ -115,9 +121,9 @@ export const loadGameState = (): GameState => {
     
     const state = JSON.parse(saved) as GameState;
     
-    // Ensure loaded state is valid and safe
+    // Load state as-is
     return {
-      score: Math.min(state.score || 0, MAX_SAFE_NUMBER),
+      score: state.score || 0,
       upgrades: state.upgrades || {},
       purchasedSkins: state.purchasedSkins || ['default'],
       equippedSkin: state.equippedSkin || 'default',
@@ -138,27 +144,44 @@ export const resetGameState = (): void => {
 };
 
 export const formatNumber = (num: number): string => {
-  // Handle very large numbers with scientific notation
-  if (num >= 1e21) {
-    return num.toExponential(2);
+  const decimal = D(num);
+  
+  // Handle very large numbers with better formatting
+  if (decimal.gte(1e308)) {
+    return decimal.toExponential(2);
   }
-  if (num >= 1e18) {
-    return (num / 1e18).toFixed(2) + 'Qi'; // Quintillion
+  if (decimal.gte(1e33)) {
+    return decimal.toExponential(2);
   }
-  if (num >= 1e15) {
-    return (num / 1e15).toFixed(2) + 'Qa'; // Quadrillion
+  if (decimal.gte(1e30)) {
+    return decimal.div(1e30).toFixed(2) + ' No'; // Nonillion
   }
-  if (num >= 1e12) {
-    return (num / 1e12).toFixed(2) + 'T'; // Trillion
+  if (decimal.gte(1e27)) {
+    return decimal.div(1e27).toFixed(2) + ' Oc'; // Octillion
   }
-  if (num >= 1e9) {
-    return (num / 1e9).toFixed(2) + 'B'; // Billion
+  if (decimal.gte(1e24)) {
+    return decimal.div(1e24).toFixed(2) + ' Sp'; // Septillion
   }
-  if (num >= 1e6) {
-    return (num / 1e6).toFixed(2) + 'M'; // Million
+  if (decimal.gte(1e21)) {
+    return decimal.div(1e21).toFixed(2) + ' Sx'; // Sextillion
   }
-  if (num >= 1e3) {
-    return (num / 1e3).toFixed(2) + 'K'; // Thousand
+  if (decimal.gte(1e18)) {
+    return decimal.div(1e18).toFixed(2) + ' Qi'; // Quintillion
   }
-  return num.toFixed(2);
+  if (decimal.gte(1e15)) {
+    return decimal.div(1e15).toFixed(2) + ' Qa'; // Quadrillion
+  }
+  if (decimal.gte(1e12)) {
+    return decimal.div(1e12).toFixed(2) + ' T'; // Trillion
+  }
+  if (decimal.gte(1e9)) {
+    return decimal.div(1e9).toFixed(2) + ' B'; // Billion
+  }
+  if (decimal.gte(1e6)) {
+    return decimal.div(1e6).toFixed(2) + ' M'; // Million
+  }
+  if (decimal.gte(1e3)) {
+    return decimal.div(1e3).toFixed(2) + ' K'; // Thousand
+  }
+  return decimal.toFixed(2);
 };
