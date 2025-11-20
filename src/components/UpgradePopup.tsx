@@ -69,8 +69,10 @@ export default function UpgradePopup({
             level: levelData.level,
             price: levelData.price,
           });
+          break; // Only show the next level for each upgrade
         }
-        break; // Only show the next level for each upgrade
+        // If requirement not met, stop checking this upgrade
+        break;
       }
     }
   }
