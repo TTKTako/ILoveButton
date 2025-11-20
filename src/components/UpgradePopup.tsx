@@ -51,6 +51,37 @@ export default function UpgradePopup({
   for (const upgrade of availableUpgrades) {
     const upgradeState = singleUpgradeState[upgrade.id] || {};
     
+    // Check if user has purchased at least one level of this upgrade
+    const hasAnyLevel = upgrade.levels.some(levelData => upgradeState[levelData.level] === true);
+    
+    // Check if all levels are owned (upgrade is maxed)
+    const allLevelsOwned = upgrade.levels.every(levelData => upgradeState[levelData.level] === true);
+    
+    // If upgrade is maxed, skip it
+    if (allLevelsOwned) continue;
+    
+    // If user hasn't bought any level yet, skip it (unless it's level 1)
+    if (!hasAnyLevel) {
+      // Only show level 1 if requirements are met
+      const levelData = upgrade.levels[0];
+      if (levelData && levelData.level === 1) {
+        const baseCount = baseUpgradeState[upgrade.baseUpgradeId] || 0;
+        const meetsRequirement = upgrade.baseUpgradeId === 'manual' || 
+                                upgrade.baseUpgradeId === 'global' || 
+                                upgrade.baseUpgradeId === 'endgame' ||
+                                baseCount >= levelData.unlockRequirement;
+        
+        if (meetsRequirement) {
+          purchasableUpgrades.push({
+            upgrade,
+            level: levelData.level,
+            price: levelData.price,
+          });
+        }
+      }
+      continue;
+    }
+    
     // Find the next level to purchase
     for (const levelData of upgrade.levels) {
       const isOwned = upgradeState[levelData.level] || false;
@@ -69,10 +100,8 @@ export default function UpgradePopup({
             level: levelData.level,
             price: levelData.price,
           });
-          break; // Only show the next level for each upgrade
         }
-        // If requirement not met, stop checking this upgrade
-        break;
+        break; // Only show the next level for each upgrade
       }
     }
   }
