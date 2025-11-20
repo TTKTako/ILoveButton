@@ -91,8 +91,8 @@
                 {"level": 6, "price": 240000000000, "multiplier": 8, "unlockRequirement": 25},
                 {"level": 7, "price": 2400000000000, "multiplier": 8, "unlockRequirement": 25},
                 {"level": 8, "price": 24000000000000, "multiplier": 16, "unlockRequirement": 100},
-                {"level": 9, "price": 240000000000000, "multiplier": 30, "unlockRequirement": 250},
-                {"level": 10, "price": 2400000000000000, "multiplier": 36, "unlockRequirement": 300}
+                {"level": 9, "price": 240000000000000, "multiplier": 30, "unlockRequirement": 150},
+                {"level": 10, "price": 2400000000000000, "multiplier": 36, "unlockRequirement": 200}
             ]
         },
         {
@@ -110,8 +110,8 @@
                 {"level": 6, "price": 2500000000000, "multiplier": 8, "unlockRequirement": 25},
                 {"level": 7, "price": 25000000000000, "multiplier": 8, "unlockRequirement": 25},
                 {"level": 8, "price": 250000000000000, "multiplier": 16, "unlockRequirement": 100},
-                {"level": 9, "price": 2500000000000000, "multiplier": 30, "unlockRequirement": 250},
-                {"level": 10, "price": 25000000000000000, "multiplier": 36, "unlockRequirement": 300}
+                {"level": 9, "price": 2500000000000000, "multiplier": 30, "unlockRequirement": 125},
+                {"level": 10, "price": 25000000000000000, "multiplier": 36, "unlockRequirement": 175}
             ]
         },
         {
@@ -129,8 +129,8 @@
                 {"level": 6, "price": 35000000000000, "multiplier": 8, "unlockRequirement": 25},
                 {"level": 7, "price": 350000000000000, "multiplier": 8, "unlockRequirement": 25},
                 {"level": 8, "price": 3500000000000000, "multiplier": 16, "unlockRequirement": 100},
-                {"level": 9, "price": 35000000000000000, "multiplier": 30, "unlockRequirement": 250},
-                {"level": 10, "price": 350000000000000000, "multiplier": 36, "unlockRequirement": 300}
+                {"level": 9, "price": 35000000000000000, "multiplier": 30, "unlockRequirement": 100},
+                {"level": 10, "price": 350000000000000000, "multiplier": 36, "unlockRequirement": 150}
             ]
         },
         {
@@ -148,8 +148,8 @@
                 {"level": 6, "price": 600000000000000, "multiplier": 8, "unlockRequirement": 25},
                 {"level": 7, "price": 6000000000000000, "multiplier": 8, "unlockRequirement": 25},
                 {"level": 8, "price": 60000000000000000, "multiplier": 16, "unlockRequirement": 100},
-                {"level": 9, "price": 600000000000000000, "multiplier": 30, "unlockRequirement": 250},
-                {"level": 10, "price": 6000000000000000000, "multiplier": 36, "unlockRequirement": 300}
+                {"level": 9, "price": 600000000000000000, "multiplier": 30, "unlockRequirement": 100},
+                {"level": 10, "price": 6000000000000000000, "multiplier": 36, "unlockRequirement": 120}
             ]
         },
         {
@@ -167,8 +167,8 @@
                 {"level": 6, "price": 9000000000000000, "multiplier": 8, "unlockRequirement": 25},
                 {"level": 7, "price": 90000000000000000, "multiplier": 8, "unlockRequirement": 25},
                 {"level": 8, "price": 900000000000000000, "multiplier": 16, "unlockRequirement": 100},
-                {"level": 9, "price": 9000000000000000000, "multiplier": 30, "unlockRequirement": 250},
-                {"level": 10, "price": 90000000000000000000, "multiplier": 36, "unlockRequirement": 300}
+                {"level": 9, "price": 9000000000000000000, "multiplier": 30, "unlockRequirement": 100},
+                {"level": 10, "price": 90000000000000000000, "multiplier": 36, "unlockRequirement": 120}
             ]
         },
         {
