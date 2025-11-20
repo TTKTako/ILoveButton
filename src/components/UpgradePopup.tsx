@@ -62,20 +62,13 @@ export default function UpgradePopup({
       const isOwned = upgradeState[levelData.level] || false;
       
       if (!isOwned) {
-        // Check unlock requirement
-        const baseCount = baseUpgradeState[upgrade.baseUpgradeId] || 0;
-        const meetsRequirement = upgrade.baseUpgradeId === 'manual' || 
-                                upgrade.baseUpgradeId === 'global' || 
-                                upgrade.baseUpgradeId === 'endgame' ||
-                                baseCount >= levelData.unlockRequirement;
-        
-        if (meetsRequirement) {
-          purchasableUpgrades.push({
-            upgrade,
-            level: levelData.level,
-            price: levelData.price,
-          });
-        }
+        // Always add the next level if it's not owned, regardless of unlock requirement
+        // (we'll show it as locked in the UI if requirements aren't met)
+        purchasableUpgrades.push({
+          upgrade,
+          level: levelData.level,
+          price: levelData.price,
+        });
         break; // Only show the next level for each upgrade
       }
     }
@@ -88,9 +81,18 @@ export default function UpgradePopup({
       purchasableUpgrades.length > 3 ? 'max-h-[300px] sm:max-h-[400px] overflow-y-auto' : ''
     }`}>
       {purchasableUpgrades.map(({ upgrade, level, price }) => {
-        const canAfford = score >= price;
         const levelData = upgrade.levels.find(l => l.level === level);
         const isEndgame = upgrade.id === 'endgame_upgrade';
+        
+        // Check unlock requirement
+        const baseCount = baseUpgradeState[upgrade.baseUpgradeId] || 0;
+        const meetsRequirement = upgrade.baseUpgradeId === 'manual' || 
+                                upgrade.baseUpgradeId === 'global' || 
+                                upgrade.baseUpgradeId === 'endgame' ||
+                                baseCount >= (levelData?.unlockRequirement || 0);
+        
+        const canAfford = score >= price && meetsRequirement;
+        const isLocked = !meetsRequirement;
         
         return (
           <div
@@ -98,9 +100,11 @@ export default function UpgradePopup({
             className={`bg-white border-2 rounded-lg shadow-lg p-2 sm:p-3 min-w-[240px] sm:min-w-[280px] transition-all ${
               isEndgame
                 ? 'border-purple-500 bg-gradient-to-r from-purple-100 to-pink-100 animate-pulse'
-                : canAfford 
-                  ? 'border-green-400 hover:shadow-xl hover:scale-105 cursor-pointer' 
-                  : 'border-gray-300 opacity-75'
+                : isLocked
+                  ? 'border-red-300 bg-red-50 opacity-60'
+                  : canAfford 
+                    ? 'border-green-400 hover:shadow-xl hover:scale-105 cursor-pointer' 
+                    : 'border-gray-300 opacity-75'
             }`}
             onClick={() => canAfford && onPurchase(upgrade.id, level)}
           >
@@ -108,14 +112,17 @@ export default function UpgradePopup({
               <div className={`text-2xl sm:text-3xl flex-shrink-0 ${isEndgame ? 'animate-bounce' : ''}`}>{upgrade.icon}</div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-1 gap-2">
-                  <h3 className={`font-bold text-xs sm:text-sm ${isEndgame ? 'text-purple-700' : 'text-black'} truncate`}>
+                  <h3 className={`font-bold text-xs sm:text-sm ${isEndgame ? 'text-purple-700' : isLocked ? 'text-red-600' : 'text-black'} truncate`}>
                     {upgrade.name}
                     {!isEndgame && <span className="ml-1 text-[10px] sm:text-xs text-blue-600">Lv.{level}</span>}
+                    {isLocked && <span className="ml-1 text-[10px] sm:text-xs text-red-600">🔒</span>}
                   </h3>
                   <div className={`text-[10px] sm:text-xs font-semibold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded whitespace-nowrap flex-shrink-0 ${
                     isEndgame
                       ? 'bg-purple-200 text-purple-800'
-                      : canAfford ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
+                      : isLocked
+                        ? 'bg-red-100 text-red-700'
+                        : canAfford ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
                   }`}>
                     {formatNumber(price)}
                   </div>
@@ -124,8 +131,15 @@ export default function UpgradePopup({
                   {upgrade.description}
                 </p>
                 {levelData && !isEndgame && (
-                  <div className="text-[10px] sm:text-xs text-purple-600 font-semibold">
-                    ×{levelData.multiplier} multiplier
+                  <div className="flex flex-col gap-0.5">
+                    <div className="text-[10px] sm:text-xs text-purple-600 font-semibold">
+                      ×{levelData.multiplier} multiplier
+                    </div>
+                    {isLocked && levelData.unlockRequirement > 0 && (
+                      <div className="text-[10px] sm:text-xs text-red-600 font-semibold">
+                        Requires {levelData.unlockRequirement} {upgrade.baseUpgradeId}(s)
+                      </div>
+                    )}
                   </div>
                 )}
                 {isEndgame && (
