@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from 'react';
 import { Upgrade, UpgradeState, SingleUpgrade, SingleUpgradeState } from '@/types/game';
-import { calculateUpgradePrice, formatNumber, getUpgradeMultiplier } from '@/utils/gameStorage';
+import { calculateUpgradePrice, calculateBulkUpgradePrice, formatNumber, getUpgradeMultiplier } from '@/utils/gameStorage';
 
 interface UpgradeShopProps {
   isOpen: boolean;
@@ -9,7 +10,7 @@ interface UpgradeShopProps {
   upgrades: Upgrade[];
   upgradeState: UpgradeState;
   score: number;
-  onPurchase: (upgradeId: string) => void;
+  onPurchase: (upgradeId: string, quantity?: number) => void;
   totalCPS: number;
   singleUpgrades: SingleUpgradeState;
   singleUpgradeData: SingleUpgrade[];
@@ -26,32 +27,57 @@ export default function UpgradeShop({
   singleUpgrades,
   singleUpgradeData,
 }: UpgradeShopProps) {
+  const [selectedQuantity, setSelectedQuantity] = useState(1);
+  const quantities = [1, 2, 5, 10, 50, 100];
+  
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 backdrop-blur-sm bg-black/50 flex items-center justify-center z-1000 p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[85vh] sm:max-h-[80vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="bg-blue-500 text-white p-3 sm:p-4 flex justify-between items-center">
-          <div>
-            <h2 className="text-xl sm:text-2xl font-bold">Upgrade Shop</h2>
-            <p className="text-xs sm:text-sm opacity-90">
-              Total Production: {formatNumber(totalCPS)} clicks/sec
-            </p>
+        <div className="bg-blue-500 text-white p-3 sm:p-4">
+          <div className="flex justify-between items-center mb-3">
+            <div>
+              <h2 className="text-xl sm:text-2xl font-bold">Upgrade Shop</h2>
+              <p className="text-xs sm:text-sm opacity-90">
+                Total Production: {formatNumber(totalCPS)} clicks/sec
+              </p>
+            </div>
+            <button
+              onClick={onClose}
+              className="text-white hover:bg-blue-600 rounded px-2 sm:px-3 py-1 text-lg sm:text-xl font-bold"
+            >
+              ✕
+            </button>
           </div>
-          <button
-            onClick={onClose}
-            className="text-white hover:bg-blue-600 rounded px-2 sm:px-3 py-1 text-lg sm:text-xl font-bold"
-          >
-            ✕
-          </button>
+          
+          {/* Quantity Selector */}
+          <div className="flex flex-wrap gap-2 items-center">
+            <span className="text-sm font-semibold">Buy Amount:</span>
+            {quantities.map((qty) => (
+              <button
+                key={qty}
+                onClick={() => setSelectedQuantity(qty)}
+                className={`px-3 py-1 rounded font-semibold text-sm transition-colors ${
+                  selectedQuantity === qty
+                    ? 'bg-white text-blue-600'
+                    : 'bg-blue-400 text-white hover:bg-blue-300'
+                }`}
+              >
+                {qty}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Upgrades List */}
         <div className="overflow-y-auto p-2 sm:p-4 space-y-2 sm:space-y-3">
           {upgrades.map((upgrade) => {
             const count = upgradeState[upgrade.id] || 0;
-            const price = calculateUpgradePrice(upgrade.base_price, count);
+            const price = selectedQuantity === 1 
+              ? calculateUpgradePrice(upgrade.base_price, count)
+              : calculateBulkUpgradePrice(upgrade.base_price, count, selectedQuantity);
             const canAfford = score >= price;
             const multiplier = getUpgradeMultiplier(upgrade.id, singleUpgrades, singleUpgradeData);
             const effectiveCPS = upgrade.base_cps * multiplier;
@@ -96,7 +122,7 @@ export default function UpgradeShop({
                   </div>
                 </div>
                 <button
-                  onClick={() => onPurchase(upgrade.id)}
+                  onClick={() => onPurchase(upgrade.id, selectedQuantity)}
                   disabled={!canAfford}
                   className={`px-4 sm:px-6 py-2 rounded font-semibold text-white transition-colors text-sm sm:text-base w-full sm:w-auto flex-shrink-0 ${
                     canAfford
@@ -104,6 +130,7 @@ export default function UpgradeShop({
                       : 'bg-gray-400 cursor-not-allowed'
                   }`}
                 >
+                  {selectedQuantity > 1 && <span className="text-xs block">Buy {selectedQuantity}x</span>}
                   {formatNumber(price)}
                 </button>
               </div>

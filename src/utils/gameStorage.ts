@@ -24,6 +24,26 @@ export const calculateUpgradePrice = (basePrice: number, count: number): number 
   return price.floor().toNumber();
 };
 
+// Calculate the total cost of buying N upgrades
+// Uses geometric series sum: basePrice * (1.15^count + 1.15^(count+1) + ... + 1.15^(count+n-1))
+// Formula: basePrice * 1.15^count * (1.15^n - 1) / (1.15 - 1)
+export const calculateBulkUpgradePrice = (basePrice: number, currentCount: number, amount: number): number => {
+  if (amount <= 0) return 0;
+  
+  const multiplier = D(1.15);
+  const basePriceDecimal = D(basePrice);
+  const currentCountDecimal = D(currentCount);
+  const amountDecimal = D(amount);
+  
+  // Calculate: basePrice * 1.15^currentCount * (1.15^amount - 1) / (1.15 - 1)
+  const totalCost = basePriceDecimal
+    .times(multiplier.pow(currentCountDecimal))
+    .times(multiplier.pow(amountDecimal).sub(1))
+    .div(multiplier.sub(1));
+  
+  return totalCost.floor().toNumber();
+};
+
 export const calculateTotalCPS = (
   upgrades: UpgradeState,
   upgradeData: Array<{ id: string; base_cps: number }>,

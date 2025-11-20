@@ -11,6 +11,7 @@ import {
   saveGameState,
   resetGameState,
   calculateUpgradePrice,
+  calculateBulkUpgradePrice,
   calculateTotalCPS,
   safeAdd,
   safeSubtract,
@@ -283,18 +284,20 @@ export default function Home() {
     }
   };
 
-  const handlePurchaseUpgrade = (upgradeId: string) => {
+  const handlePurchaseUpgrade = (upgradeId: string, quantity: number = 1) => {
     const upgrade = upgradeData.find((u) => u.id === upgradeId);
     if (!upgrade) return;
     
     const currentCount = upgrades[upgradeId] || 0;
-    const price = calculateUpgradePrice(upgrade.base_price, currentCount);
+    const price = quantity === 1 
+      ? calculateUpgradePrice(upgrade.base_price, currentCount)
+      : calculateBulkUpgradePrice(upgrade.base_price, currentCount, quantity);
     
     if (score >= price) {
       setScore((prevScore) => safeSubtract(prevScore, price));
       setUpgrades((prev) => ({
         ...prev,
-        [upgradeId]: currentCount + 1,
+        [upgradeId]: currentCount + quantity,
       }));
     }
   };
