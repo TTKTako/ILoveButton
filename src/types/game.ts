@@ -46,4 +46,5 @@ export interface GameState {
   purchasedSkins: string[];
   equippedSkin: string;
   singleUpgrades?: SingleUpgradeState;
+  isGalaxyMode?: boolean;
 }

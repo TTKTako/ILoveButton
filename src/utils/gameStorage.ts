@@ -113,6 +113,7 @@ export const getDefaultGameState = (): GameState => ({
   purchasedSkins: ['default'],
   equippedSkin: 'default',
   singleUpgrades: {},
+  isGalaxyMode: false,
 });
 
 export const saveGameState = (state: GameState): void => {
@@ -124,6 +125,7 @@ export const saveGameState = (state: GameState): void => {
       purchasedSkins: [...state.purchasedSkins],
       equippedSkin: state.equippedSkin,
       singleUpgrades: state.singleUpgrades || {},
+      isGalaxyMode: state.isGalaxyMode || false,
     };
     
     localStorage.setItem(GAME_STATE_KEY, JSON.stringify(safeState));
@@ -148,6 +150,7 @@ export const loadGameState = (): GameState => {
       purchasedSkins: state.purchasedSkins || ['default'],
       equippedSkin: state.equippedSkin || 'default',
       singleUpgrades: state.singleUpgrades || {},
+      isGalaxyMode: state.isGalaxyMode || false,
     };
   } catch (error) {
     console.error('Failed to load game state:', error);

@@ -100,6 +100,11 @@ export default function Home() {
     setButtonSkin(gameState.equippedSkin);
     setSingleUpgrades(gameState.singleUpgrades || {});
     
+    // Migration: Check if user owns endgame upgrade but doesn't have isGalaxyMode set
+    const hasEndgameUpgrade = gameState.singleUpgrades?.endgame_upgrade?.[1] === true;
+    const shouldBeInGalaxyMode = hasEndgameUpgrade || gameState.isGalaxyMode || false;
+    setIsGalaxyMode(shouldBeInGalaxyMode);
+    
     // Check if first time visitor
     const hasVisited = localStorage.getItem('hasVisitedBefore');
     if (!hasVisited) {
@@ -118,10 +123,11 @@ export default function Home() {
       purchasedSkins,
       equippedSkin: buttonSkin,
       singleUpgrades,
+      isGalaxyMode,
     };
     
     saveGameState(gameState);
-  }, [score, upgrades, purchasedSkins, buttonSkin, singleUpgrades]);
+  }, [score, upgrades, purchasedSkins, buttonSkin, singleUpgrades, isGalaxyMode]);
 
   // Auto-click from upgrades (CPS)
   useEffect(() => {
