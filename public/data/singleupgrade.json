@@ -15,8 +15,8 @@
                 {"level": 6, "price": 35000000, "multiplier": 8, "unlockRequirement": 25},
                 {"level": 7, "price": 350000000, "multiplier": 8, "unlockRequirement": 25},
                 {"level": 8, "price": 3500000000, "multiplier": 16, "unlockRequirement": 100},
-                {"level": 9, "price": 35000000000, "multiplier": 30, "unlockRequirement": 250},
-                {"level": 10, "price": 350000000000, "multiplier": 36, "unlockRequirement": 300}
+                {"level": 9, "price": 35000000000, "multiplier": 30, "unlockRequirement": 200},
+                {"level": 10, "price": 350000000000, "multiplier": 36, "unlockRequirement": 350}
             ]
         },
         {
